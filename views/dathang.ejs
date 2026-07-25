@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt hàng - 5KHY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dathang.css">
+</head>
+<body>
+    <%- include('partials/header', { active: '' }) %>
+
+    <main class="order-container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li><a href="/giohang.html">Giỏ hàng</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">Đặt hàng</li>
+            </ol>
+        </nav>
+
+        <div class="order-layout">
+            <section class="order-form-box" aria-labelledby="order-form-title">
+                <h1 class="section-heading" id="order-form-title">Thông tin thanh toán</h1>
+
+                <form id="order-form" novalidate>
+                    <div class="form-field">
+                        <label for="fullname">Họ và Tên <span class="required">*</span></label>
+                        <input type="text" id="fullname" name="fullname" placeholder="Vui lòng nhập tên người nhận" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Nhập email của bạn">
+                        </div>
+                        <div class="form-field">
+                            <label for="phone">Điện thoại <span class="required">*</span></label>
+                            <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="address">Địa chỉ <span class="required">*</span></label>
+                        <input type="text" id="address" name="address" placeholder="Số nhà, ngõ, tên đường..." required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="city">Tỉnh / Thành phố <span class="required">*</span></label>
+                            <select id="city" name="city" required>
+                                <option value="" selected disabled>-- Chọn Tỉnh / Thành phố --</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="ward">Quận / Huyện / Xã <span class="required">*</span></label>
+                            <select id="ward" name="ward" required disabled>
+                                <option value="" selected disabled>-- Chọn Quận / Huyện / Xã --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="note">Thông tin bổ sung</label>
+                        <textarea id="note" name="note" maxlength="500" rows="6" placeholder="Bạn có điều gì nhắn nhủ? (Tối đa 500 từ)"></textarea>
+                    </div>
+                </form>
+            </section>
+
+            <section class="order-summary-box" aria-labelledby="order-summary-title">
+                <h2 id="order-summary-title">Đơn hàng đã chọn</h2>
+
+                <div class="summary-table-header">
+                    <span>Sản phẩm</span>
+                    <span>Số lượng</span>
+                    <span>Thành tiền</span>
+                </div>
+
+                <ul class="order-items-list" id="order-items-list"></ul>
+
+                <div class="summary-row">
+                    <span>Tạm tính</span>
+                    <span id="subtotal-price">0đ</span>
+                </div>
+                <div class="summary-row">
+                    <span>Giảm</span>
+                    <span id="discount-price">0đ</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Tổng cộng</span>
+                    <span id="total-price">0đ</span>
+                </div>
+
+                <fieldset class="payment-method-group">
+                    <legend class="visually-hidden">Phương thức thanh toán</legend>
+                    <label class="radio-row">
+                        <input type="radio" name="payment-method" value="transfer" checked>
+                        <span>Thanh toán chuyển khoản</span>
+                    </label>
+                    <label class="radio-row">
+                        <input type="radio" name="payment-method" value="cod">
+                        <span>Thanh toán COD</span>
+                    </label>
+                </fieldset>
+
+                <button type="submit" form="order-form" class="confirm-order-btn" id="confirm-order-btn">Xác nhận đặt hàng</button>
+            </section>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/js/cart.js"></script>
+    <script>
+        // Load danh sách 34 Tỉnh/Thành và Phường/Xã bằng API chính thức, đã cập nhật
+        // đúng cơ cấu hành chính 2 cấp mới nhất (sau sáp nhập 01/07/2025)
+        document.addEventListener('DOMContentLoaded', function () {
+            const citySelect = document.getElementById('city');
+            const wardSelect = document.getElementById('ward');
+
+            if (!citySelect || !wardSelect) return;
+
+            let localData = [];
+
+            // Tải toàn bộ dữ liệu Tỉnh/Thành kèm Phường/Xã trực thuộc (depth=2 = 2 cấp)
+            fetch('https://provinces.open-api.vn/api/v2/?depth=2')
+                .then(res => res.json())
+                .then(data => {
+                    localData = data;
+                    citySelect.innerHTML = '<option value="" selected disabled>-- Chọn Tỉnh / Thành phố --</option>';
+
+                    data.forEach(province => {
+                        const opt = document.createElement('option');
+                        opt.value = province.name;
+                        opt.dataset.code = province.code;
+                        opt.textContent = province.name;
+                        citySelect.appendChild(opt);
+                    });
+                })
+                .catch(err => {
+                    console.error('Lỗi load địa giới:', err);
+                    citySelect.innerHTML = '<option value="" selected disabled>-- Không tải được dữ liệu --</option>';
+                });
+
+            // Chọn Tỉnh/Thành -> đổ danh sách Phường/Xã trực thuộc (không còn cấp Huyện)
+            citySelect.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const provinceCode = Number(selectedOption.dataset.code);
+
+                wardSelect.innerHTML = '<option value="" selected disabled>-- Đang tải dữ liệu... --</option>';
+                wardSelect.disabled = true;
+
+                const selectedProvince = localData.find(p => p.code === provinceCode);
+
+                if (selectedProvince && selectedProvince.wards && selectedProvince.wards.length > 0) {
+                    wardSelect.innerHTML = '<option value="" selected disabled>-- Chọn Phường / Xã --</option>';
+
+                    selectedProvince.wards.forEach(ward => {
+                        const opt = document.createElement('option');
+                        opt.value = ward.name;
+                        opt.textContent = ward.name;
+                        wardSelect.appendChild(opt);
+                    });
+
+                    wardSelect.disabled = false;
+                } else {
+                    wardSelect.innerHTML = '<option value="" selected disabled>-- Không có dữ liệu --</option>';
+                }
+            });
+        });
+
+        let orderItems = [];
+
+        function formatVND(num) {
+            return num.toLocaleString('vi-VN') + 'đ';
+        }
+
+        async function loadOrderSummary() {
+            try {
+                const cartItems = await Cart.getItems();
+                orderItems = cartItems.filter(i => i.selected);
+
+                if (orderItems.length === 0) {
+                    alert("Không tìm thấy sản phẩm nào đã chọn! Hệ thống sẽ chuyển bạn về giỏ hàng.");
+                    window.location.href = '/giohang.html';
+                    return;
+                }
+
+                renderOrderSummary();
+            } catch (err) {
+                console.error('Lỗi khi tải đơn hàng:', err);
+                const list = document.getElementById('order-items-list');
+                if (list) list.innerHTML = '<li style="padding:12px;color:#e74c3c;">Không tải được giỏ hàng. Vui lòng kiểm tra kết nối server/MongoDB.</li>';
+            }
+        }
+
+        function renderOrderSummary() {
+            const list = document.getElementById('order-items-list');
+            if (!list) return;
+
+            list.innerHTML = orderItems.map(item => {
+                const variantText = item.variant ? ` (${item.variant})` : '';
+                const colorText = item.color ? ` - Màu: ${item.color}` : '';
+                return `
+                    <li class="order-item-row">
+                        <span class="oi-name">${item.name}${variantText}${colorText}</span>
+                        <span class="oi-qty">${item.qty}</span>
+                        <span class="oi-total">${formatVND(item.price * item.qty)}</span>
+                    </li>
+                `;
+            }).join('');
+
+            const subtotal = orderItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+            document.getElementById('subtotal-price').textContent = formatVND(subtotal);
+            document.getElementById('total-price').textContent = formatVND(subtotal);
+        }
+
+        document.getElementById('order-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                return;
+            }
+
+            const submitBtn = document.getElementById('confirm-order-btn');
+            submitBtn.disabled = true;
+
+            const shipping = {
+                fullname: document.getElementById('fullname').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                ward: document.getElementById('ward').value,
+                note: document.getElementById('note').value
+            };
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+            fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cartId: Cart.getCartId(), shipping, paymentMethod })
+            })
+            .then(async (res) => {
+                const order = await res.json();
+                if (!res.ok) throw new Error(order.error || 'Không tạo được đơn hàng.');
+                
+                // Đồng bộ chính xác đường dẫn chuyển hướng sang trang thanh toán
+                window.location.href = `/thanhtoan.html?order=${order.orderCode}`;
+            })
+            .catch((err) => {
+                alert(err.message);
+                submitBtn.disabled = false;
+            });
+        });
+
+        loadOrderSummary();
+    </script>
+</body>
+</html>

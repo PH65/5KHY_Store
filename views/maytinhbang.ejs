@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục Máy tính bảng chính hãng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dienthoai.css">
+</head>
+<body>
+    <%- include('partials/header', { active: 'maytinhbang' }) %>
+
+<main class="container_dienthoai">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">Máy tính bảng</li>
+            </ol>
+        </nav>
+
+        <h1 class="page-title">MÁY TÍNH BẢNG</h1>
+
+        <div class="phone-banners-grid">
+            <figure class="banner-item">
+                <img src="/Hình ảnh/POSTER/MTB-Samsung/samsung-galaxy-tab-s11-ultra.jpg" alt="Samsung Galaxy Tab S11 Ultra">
+            </figure>
+            <figure class="banner-item">
+                <img src="/Hình ảnh/POSTER/MTB-ipad/iPad-Pro-M5.jpg" alt="iPad Pro M5">
+            </figure>
+        </div>
+
+<section class="filter-section" aria-labelledby="filter-title">
+    <h2 class="filter-title" id="filter-title">Danh mục hãng máy tính bảng</h2>
+    <div class="brand-tags">
+        <button type="button" class="brand-btn active" onclick="filterByBrand(event, 'all')">
+            <span>Tất cả</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Apple iPad')">
+            <span>Apple iPad</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Samsung Galaxy Tab')">
+            <span>Samsung Galaxy Tab</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Xiaomi Tab')">
+            <span>Xiaomi Tab</span>
+        </button>
+    </div>
+</section>
+
+        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp máy tính bảng">
+            <div class="dropdowns-group">
+                <!-- Vi xử lý -->
+                <select id="filter-cpu" onchange="applyFilters()">
+                    <option value="">Vi xử lý</option>
+                    <option value="apple">Apple Silicon</option>
+                    <option value="snapdragon">Snapdragon</option>
+                    <option value="helio">MediaTek</option>
+                    <option value="exynos">Exynos</option>
+                </select>
+
+                <!-- RAM -->
+                <select id="filter-ram" onchange="applyFilters()">
+                    <option value="">Dung lượng RAM</option>
+                    <option value="4gb">4 GB</option>
+                    <option value="6gb">6 GB</option>
+                    <option value="8gb">8 GB</option>
+                    <option value="12gb">12 GB</option>
+                    <option value="16gb">16 GB</option>
+                </select>
+
+                <!-- Bộ nhớ trong -->
+                <select id="filter-storage" onchange="applyFilters()">
+                    <option value="">Bộ nhớ trong</option>
+                    <option value="64gb">64 GB</option>
+                    <option value="128gb">128 GB</option>
+                    <option value="256gb">256 GB</option>
+                    <option value="512gb">512 GB</option>
+                    <option value="1tb">1 TB</option>
+                </select>
+
+                <!-- Màn hình -->
+                <select id="filter-screen" onchange="applyFilters()">
+                    <option value="">Màn hình</option>
+                    <option value="small">Dưới 10 inch</option>
+                    <option value="medium">10 - 12 inch</option>
+                    <option value="large">Trên 12 inch</option>
+                </select>
+            </div>
+
+            <!-- Sắp xếp giá -->
+            <div class="sort-group">
+                <label for="sort-products">Sắp xếp theo:</label>
+                <select id="sort-products" onchange="applyFilters()">
+                    <option value="featured">Nổi bật</option>
+                    <option value="price-asc">Giá thấp đến cao</option>
+                    <option value="price-desc">Giá cao đến thấp</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="products-grid-layout" id="Tablets-container">
+            </div>
+
+        <div class="load-more-container">
+            <button type="button" class="load-more-btn">Xem thêm sản phẩm</button>
+        </div>
+
+    </main>
+
+    <%- include('partials/footer') %>
+<script>
+        function formatVND(price) {
+            if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
+            return Number(price).toLocaleString('vi-VN') + 'đ';
+        }
+        const tabletsContainer = document.getElementById('Tablets-container');
+        let allTabletsData = [];
+        let currentLimit = 20;
+        let allTablets = [];
+        let selectedBrand = 'all';
+
+        fetch('/api/tablets')
+            .then(response => response.json())
+            .then(data => {
+                allTabletsData = data;
+                renderTabletsUI(allTabletsData);
+            })
+            .catch(err => console.error('Lỗi tải dữ liệu máy tính bảng:', err));
+
+        function renderTabletsUI(tabletList) {
+            if (!tabletsContainer) return;
+            allTablets = tabletList;
+
+            if (tabletList.length === 0) {
+                tabletsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93;">Không tìm thấy sản phẩm nào phù hợp.</p>`;
+                toggleLoadMoreButton(false);
+                return;
+            }
+
+            const displayedTablets = tabletList.slice(0, currentLimit);
+
+            tabletsContainer.innerHTML = displayedTablets.map((tablet, idx) => {
+                const variantsHtml = tablet.variants ? tablet.variants.map((v, i) => `
+                    <span class="${i === 0 ? 'active' : ''}" role="button" tabindex="0" data-price="${formatVND(v.price)}" onclick="changePrice(event, this, ${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changePrice(event, this, ${idx});}">
+                        ${v.storage}
+                    </span>
+                `).join('') : '';
+
+                const defaultPrice = tablet.variants && tablet.variants[0] ? formatVND(tablet.variants[0].price) : formatVND(tablet.price);
+                const currentId = tablet._id || idx;
+                const displayRating = tablet.rating ? Number(tablet.rating).toFixed(1) : "0";
+
+                return `
+                    <a href="/chitiet?id=${currentId}&type=tablet" class="product-card-link" style="text-decoration: none; color: inherit; display: flex;">
+                        <article class="product-card" id="tablet-card-${idx}">
+                            <figure class="prod-img">
+                                <img src="${tablet.img}" alt="${tablet.name}">
+                            </figure>
+                            <div class="prod-info">
+                                <h3 class="prod-name">${tablet.name}</h3>
+                                <div class="prod-variants" onclick="event.preventDefault();">${variantsHtml}</div>
+                                <div class="prod-price tablet-price-display">${defaultPrice}</div>
+                                <div class="prod-rating">
+                                    <i class="fa-solid fa-star"></i> ${displayRating}
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                `;
+            }).join('');
+
+            if (currentLimit >= tabletList.length) {
+                toggleLoadMoreButton(false);
+            } else {
+                toggleLoadMoreButton(true);
+            }
+        }
+
+        function toggleLoadMoreButton(show) {
+            const loadMoreBtn = document.querySelector('.load-more-btn');
+            if (loadMoreBtn) loadMoreBtn.style.display = show ? 'inline-block' : 'none';
+        }
+
+        const loadMoreBtn = document.querySelector('.load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                currentLimit += 20;
+                renderTabletsUI(allTablets);
+            });
+        }
+
+        function changePrice(event, element, idx) {
+            event.preventDefault();
+            const card = document.getElementById(`tablet-card-${idx}`);
+            if (!card) return;
+            card.querySelectorAll('.prod-variants span').forEach(s => s.classList.remove('active'));
+            element.classList.add('active');
+            card.querySelector('.tablet-price-display').innerText = element.getAttribute('data-price');
+        }
+
+        function filterByBrand(e, brandName) {
+            currentLimit = 20;
+            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            if (e && e.target) {
+                const clickedButton = e.target.closest('.brand-btn');
+                if (clickedButton) clickedButton.classList.add('active');
+            }
+            if (brandName === 'all') {
+                renderTabletsUI(allTabletsData);
+            } else {
+                const filtered = allTabletsData.filter(item =>
+                    item.brand && item.brand.toLowerCase() === brandName.toLowerCase()
+                );
+                renderTabletsUI(filtered);
+            }
+        }
+
+        function getBasePrice(item) {
+            if (item.variants && item.variants.length > 0) {
+                return Number(item.variants[0].price) || 0;
+            }
+            return Number(item.price) || 0;
+        }
+
+        function applyFilters() {
+            currentLimit = 20;
+            let filtered = [...allTabletsData];
+
+            // 1. Lọc theo Thương hiệu
+            if (selectedBrand !== 'all') {
+                filtered = filtered.filter(item => 
+                    item.brand && item.brand.toLowerCase().includes(selectedBrand.toLowerCase())
+                );
+            }
+
+            // 2. Lọc theo CPU
+            const cpuVal = document.getElementById('filter-cpu').value.toLowerCase();
+            if (cpuVal) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(cpuVal);
+                });
+            }
+
+            // 3. Lọc theo RAM
+            const ramVal = document.getElementById('filter-ram').value.toLowerCase();
+            if (ramVal) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(ramVal);
+                });
+            }
+
+            // 4. Lọc theo Storage
+            const storageVal = document.getElementById('filter-storage').value.toLowerCase();
+            if (storageVal) {
+                filtered = filtered.filter(item => {
+                    if (item.variants && item.variants.length > 0) {
+                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(storageVal));
+                    }
+                    const textSearch = ((item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(storageVal);
+                });
+            }
+
+            // 5. Sắp xếp theo Giá
+            const sortVal = document.getElementById('sort-products').value;
+            if (sortVal === 'price-asc') {
+                filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
+            } else if (sortVal === 'price-desc') {
+                filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
+            }
+
+            renderTabletsUI(filtered);
+        }
+
+        function filterByBrand(e, brandName) {
+            selectedBrand = brandName;
+            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            if (e && e.target) {
+                const clickedButton = e.target.closest('.brand-btn');
+                if (clickedButton) clickedButton.classList.add('active');
+            }
+            applyFilters();
+        }
+    </script>
+</body>
+</html>

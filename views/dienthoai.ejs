@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục Điện thoại chính hãng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css"> 
+    <link rel="stylesheet" href="/css/dienthoai.css"> 
+</head>
+<body>
+    <%- include('partials/header', { active: 'dienthoai' }) %>
+
+<main class="container_dienthoai">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">Điện thoại</li>
+            </ol>
+        </nav>
+
+        <h1 class="page-title">ĐIỆN THOẠI</h1>
+
+        <div class="phone-banners-grid">
+            <a href="chitiet.html?id=6a538042d177cc3c173a8551">
+                <figure class="banner-item">
+                    <img src="/Hình ảnh/POSTER/DT-Samsung/Samsung-s26-ultra-POSTER.jpg" alt="Galaxy S26 Ultra">
+                </figure>
+            </a>
+
+            <a href="chitiet.html?id=6a538042d177cc3c173a8552">
+                <figure class="banner-item">
+                    <img src="/Hình ảnh/POSTER/DT-Oppo/oppo-find-x9-ultra.png" alt="Oppo Find X9">
+                </figure>
+            </a>
+        </div>
+
+        <section class="filter-section" aria-labelledby="filter-title">
+            <h2 class="filter-title" id="filter-title">Danh mục hãng điện thoại</h2>
+            <div class="brand-tags">
+                <button type="button" class="brand-btn active" onclick="filterByBrand(event, 'all')">
+                    <span>Tất cả</span>
+                </button>
+
+                <button type="button" class="brand-btn" onclick="filterByBrand(event, 'iPhone')">
+                    <img src="/Hình ảnh/Logo/iphone-logo.png" alt="Apple" class="brand-logo">
+                </button>
+
+                <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Samsung')">
+                    <img src="/Hình ảnh/Logo/samsung-logo.png" alt="Samsung" class="brand-logo">
+                </button>
+
+                <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Xiaomi')">
+                    <img src="/Hình ảnh/Logo/xiaomi-logo.png" alt="Xiaomi" class="brand-logo">
+                </button>
+
+                <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Oppo')">
+                    <img src="/Hình ảnh/Logo/oppo-logo.png" alt="Oppo" class="brand-logo">
+                </button>
+
+                <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Vivo')">
+                    <img src="/Hình ảnh/Logo/vivo-logo.png" alt="Vivo" class="brand-logo">
+                </button>
+            </div>
+        </section>
+
+        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp máy tính bảng">
+            <div class="dropdowns-group">
+                <!-- Vi xử lý -->
+                <label for="filter-cpu" class="visually-hidden">Vi xử lý</label>
+                <select id="filter-cpu" onchange="applyFilters()">
+                    <option value="">Vi xử lý</option>
+                    <option value="apple">Apple Silicon</option>
+                    <option value="snapdragon">Snapdragon</option>
+                    <option value="helio">MediaTek</option>
+                    <option value="exynos">Exynos</option>
+                </select>
+
+                <!-- Dung lượng RAM -->
+                <label for="filter-ram" class="visually-hidden">Dung lượng RAM</label>
+                <select id="filter-ram" onchange="applyFilters()">
+                    <option value="">Dung lượng RAM</option>
+                    <option value="4gb">4 GB</option>
+                    <option value="6gb">6 GB</option>
+                    <option value="8gb">8 GB</option>
+                    <option value="12gb">12 GB</option>
+                    <option value="16gb">16 GB</option>
+                </select>
+
+                <!-- Bộ nhớ trong -->
+                <label for="filter-storage" class="visually-hidden">Bộ nhớ trong</label>
+                <select id="filter-storage" onchange="applyFilters()">
+                    <option value="">Bộ nhớ trong</option>
+                    <option value="64gb">64 GB</option>
+                    <option value="128gb">128 GB</option>
+                    <option value="256gb">256 GB</option>
+                    <option value="512gb">512 GB</option>
+                    <option value="1tb">1 TB</option>
+                </select>
+
+                <!-- Màn hình -->
+                <label for="filter-screen" class="visually-hidden">Màn hình</label>
+                <select id="filter-screen" onchange="applyFilters()">
+                    <option value="">Màn hình</option>
+                    <option value="small">Dưới 10 inch</option>
+                    <option value="medium">10 - 12 inch</option>
+                    <option value="large">Trên 12 inch</option>
+                </select>
+            </div>
+
+            <!-- Sắp xếp theo giá -->
+            <div class="sort-group">
+                <label for="sort-products">Sắp xếp theo:</label>
+                <select id="sort-products" onchange="applyFilters()">
+                    <option value="featured">Nổi bật</option>
+                    <option value="price-asc">Giá thấp đến cao</option>
+                    <option value="price-desc">Giá cao đến thấp</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="products-grid-layout" id="Phones-container">
+            </div>
+
+        <div class="load-more-container">
+            <button type="button" class="load-more-btn">Xem thêm sản phẩm</button>
+        </div>
+
+    </main>
+
+    <%- include('partials/footer') %>
+<script>
+        // Hàm format giá tiền chuẩn Việt Nam
+        function formatVND(price) {
+            if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
+            return Number(price).toLocaleString('vi-VN') + 'đ';
+        }
+
+        const phonesContainer = document.getElementById('Phones-container');
+        let allPhonesData = [];
+        // Số lượng sản phẩm hiển thị ban đầu
+        let currentLimit = 20; 
+
+        // Mảng chứa toàn bộ dữ liệu gốc từ database (ví dụ đặt tên là allPhones)
+        let allPhones = [];
+        let selectedBrand = 'all';
+
+        // Gọi API lấy dữ liệu từ collection products (đối với điện thoại)
+        fetch('/api/products') 
+            .then(response => response.json())
+            .then(data => {
+                allPhonesData = data;
+                renderPhonesUI(allPhonesData);
+            })
+            .catch(err => console.error('Lỗi tải dữ liệu điện thoại:', err));
+
+        function renderPhonesUI(phoneList) {
+            if (!phonesContainer) return;
+            allPhones = phoneList; 
+
+            if (phoneList.length === 0) {
+                phonesContainer.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93;">Không tìm thấy sản phẩm nào phù hợp.</p>`;
+                toggleLoadMoreButton(false);
+                return;
+            }
+
+            const displayedPhones = phoneList.slice(0, currentLimit);
+
+            phonesContainer.innerHTML = displayedPhones.map((phone, idx) => {
+                // ĐÃ SỬA: Đưa giá đã format vào data-price-formatted
+                const variantsHtml = phone.variants ? phone.variants.map((v, i) => `
+                    <span class="${i === 0 ? 'active' : ''}" role="button" tabindex="0" data-price="${formatVND(v.price)}" onclick="changePrice(event, this, ${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changePrice(event, this, ${idx});}">
+                        ${v.storage}
+                    </span>
+                `).join('') : '';
+
+                // ĐÃ SỬA: Lấy giá gốc từ v.price hoặc phone.price rồi bọc qua hàm formatVND()
+                const rawPrice = phone.variants && phone.variants[0] ? phone.variants[0].price : phone.price;
+                const defaultPrice = formatVND(rawPrice);
+
+                const currentId = phone._id || idx; 
+                const displayRating = phone.rating ? Number(phone.rating).toFixed(1) : "0";
+
+                return `
+                    <a href="chitiet.html?id=${currentId}" class="product-card-link" style="text-decoration: none; color: inherit; display: flex;">
+                        <article class="product-card" id="phone-card-${idx}">
+                            <figure class="prod-img">
+                                <img src="${phone.img}" alt="${phone.name}">
+                            </figure>
+                            <div class="prod-info">
+                                <h3 class="prod-name">${phone.name}</h3>
+                                <div class="prod-variants" onclick="event.preventDefault();">${variantsHtml}</div>
+                                <div class="prod-price phone-price-display">${defaultPrice}</div>
+                                
+                                <div class="prod-rating">
+                                    <i class="fa-solid fa-star"></i> ${displayRating}
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                `;
+            }).join('');
+
+            if (currentLimit >= phoneList.length) {
+                toggleLoadMoreButton(false);
+            } else {
+                toggleLoadMoreButton(true);
+            }
+        }
+
+        // ĐÃ SỬA: Hàm đổi giá khi click vào nút dung lượng (256GB, 512GB...)
+        function changePrice(event, element, idx) {
+            event.preventDefault(); 
+            const card = document.getElementById(`phone-card-${idx}`);
+            if (!card) return;
+            card.querySelectorAll('.prod-variants span').forEach(s => s.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Đọc giá trị đã format từ attribute data-price
+            card.querySelector('.phone-price-display').innerText = element.getAttribute('data-price');
+        }
+
+        // Hàm hỗ trợ ẩn hoặc hiện nút "Xem thêm sản phẩm"
+        function toggleLoadMoreButton(show) {
+            const loadMoreBtn = document.querySelector('.load-more-btn');
+            if (loadMoreBtn) {
+                loadMoreBtn.style.display = show ? 'inline-block' : 'none';
+            }
+        }
+
+        // Bắt sự kiện khi Hưng click vào nút "Xem thêm sản phẩm"
+        const loadMoreBtn = document.querySelector('.load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                // Tăng giới hạn hiển thị thêm 20 sản phẩm nữa
+                currentLimit += 20; 
+                
+                // Vẽ lại giao diện với danh sách điện thoại gốc ban đầu
+                renderPhonesUI(allPhones); 
+            });
+        }
+
+        // Sửa lại hàm đổi giá một chút để khi bấm đổi dung lượng không bị nhảy sang trang chi tiết lộn xộn
+        function changePrice(event, element, idx) {
+            event.preventDefault(); // Ngăn hành động chuyển trang của thẻ <a> bọc ngoài khi bấm vào nút dung lượng
+            const card = document.getElementById(`phone-card-${idx}`);
+            if (!card) return;
+            card.querySelectorAll('.prod-variants span').forEach(s => s.classList.remove('active'));
+            element.classList.add('active');
+            card.querySelector('.phone-price-display').innerText = element.getAttribute('data-price');
+        }
+
+        function filterByBrand(e, brandName) {
+            // 1. Reset lại giới hạn về 20 sản phẩm đầu tiên khi đổi hãng
+            currentLimit = 20; 
+
+            // 2. Xử lý đổi hiệu ứng màu cam Active cho nút bấm thương hiệu
+            const allButtons = document.querySelectorAll('.brand-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (e && e.target) {
+                const clickedButton = e.target.closest('.brand-btn');
+                if (clickedButton) {
+                    clickedButton.classList.add('active');
+                }
+            }
+
+            // 3. Tiến hành lọc sản phẩm động mượt mà từ Database (Đã sửa lỗi sai tên biến)
+            if (brandName === 'all') {
+                // Nếu chọn tất cả -> Hiện lại toàn bộ dữ liệu gốc thu được từ API
+                renderPhonesUI(allPhonesData);
+            } else {
+                // Nếu chọn một hãng -> Lọc không phân biệt hoa thường để tránh lỗi lệch chữ database
+                const filtered = allPhonesData.filter(item => 
+                    item.brand && item.brand.toLowerCase() === brandName.toLowerCase()
+                );
+                renderPhonesUI(filtered);
+            }
+        }
+
+        // Hàm lấy giá gốc chính xác của điện thoại để sắp xếp
+        function getBasePrice(item) {
+            if (item.variants && item.variants.length > 0) {
+                return Number(item.variants[0].price) || 0;
+            }
+            return Number(item.price) || 0;
+        }
+
+        // HÀM LỌC VÀ SẮP XẾP ĐA ĐIỀU KIỆN TỔNG HỢP
+        function applyFilters() {
+            currentLimit = 20; // Reset số lượng hiển thị ban đầu
+            let filtered = [...allPhonesData];
+
+            // 1. Lọc theo Thương hiệu (Brand)
+            if (selectedBrand !== 'all') {
+                filtered = filtered.filter(item => 
+                    item.brand && item.brand.toLowerCase() === selectedBrand.toLowerCase()
+                );
+            }
+
+            // 2. Lọc theo Vi xử lý (CPU)
+            const cpuVal = document.getElementById('filter-cpu').value.toLowerCase();
+            if (cpuVal) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(cpuVal);
+                });
+            }
+
+            // 3. Lọc theo RAM
+            const ramVal = document.getElementById('filter-ram').value.toLowerCase();
+            if (ramVal) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(ramVal);
+                });
+            }
+
+            // 4. Lọc theo Bộ nhớ trong (Storage)
+            const storageVal = document.getElementById('filter-storage').value.toLowerCase();
+            if (storageVal) {
+                filtered = filtered.filter(item => {
+                    if (item.variants && item.variants.length > 0) {
+                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(storageVal));
+                    }
+                    const textSearch = ((item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(storageVal);
+                });
+            }
+
+            // 5. Sắp xếp theo Giá (Sort)
+            const sortVal = document.getElementById('sort-products').value;
+            if (sortVal === 'price-asc') {
+                filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
+            } else if (sortVal === 'price-desc') {
+                filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
+            }
+
+            renderPhonesUI(filtered);
+        }
+
+        // Sửa lại hàm filterByBrand cũ
+        function filterByBrand(e, brandName) {
+            selectedBrand = brandName;
+            
+            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            if (e && e.target) {
+                const clickedButton = e.target.closest('.brand-btn');
+                if (clickedButton) clickedButton.classList.add('active');
+            }
+
+            applyFilters(); // Gọi hàm lọc tổng hợp
+        }
+    </script>
+</body>
+</html>

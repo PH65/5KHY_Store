@@ -1,0 +1,162 @@
+<header class="header-container">
+    <a href="/index.html" class="logo">5KHY</a>
+
+    <!-- CẤU TRÚC FORM TÌM KIẾM CÓ BỌC WRAPPER ĐỂ ĐẶT DROPDOWN GỢI Ý -->
+    <div class="search-wrapper" style="position: relative; flex: 1; max-width: 500px;">
+        <form class="search-box" role="search" action="/timkiem" method="get" id="global-search-form">
+            <label for="site-search" class="visually-hidden">Tìm kiếm sản phẩm</label>
+            <input 
+                type="search" 
+                id="site-search" 
+                name="q" 
+                placeholder="Xin chào, bạn đang tìm gì?" 
+                autocomplete="off"
+                oninput="onSearchInput(this.value)"
+                onfocus="onSearchInput(this.value)"
+            >
+            <button type="submit" class="search-btn">
+                <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                <span class="visually-hidden">Tìm kiếm</span>
+            </button>
+        </form>
+
+        <!-- POPUP DROPDOWN GỢI Ý SẢN PHẨM -->
+        <div class="search-suggestions-dropdown" id="search-suggestions-dropdown">
+            <div class="suggestions-list" id="suggestions-list"></div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+            <a href="#" class="btn btn-login" onclick="event.preventDefault(); if(confirm('Đăng xuất khỏi tài khoản <%= currentUser.fullname %>?')) { fetch('/api/auth/logout', {method:'POST'}).then(() => window.location.href = '/index.html'); }">
+                <i class="fa-solid fa-circle-user"></i> <%= currentUser.fullname %>
+            </a>
+        <% } else { %>
+            <a href="/dangnhap.html" class="btn btn-login">
+                <i class="fa-solid fa-circle-user"></i> Đăng nhập
+            </a>
+        <% } %>
+        <a href="/giohang.html" class="btn btn-cart">
+            <i class="fa-solid fa-bag-shopping"></i> Giỏ hàng
+        </a>
+    </div>
+</header>
+
+<nav class="nav-bar" aria-label="Điều hướng chính">
+    <div class="menu-toggle">
+        <button type="button" class="menu-toggle-btn" aria-haspopup="true" aria-expanded="false" aria-label="Mở danh mục sản phẩm">
+            <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+        </button>
+
+        <ul class="dropdown-menu">
+            <li>
+                <button type="button" onclick="location.href='/dienthoai.html'">
+                    <i class="fa-solid fa-mobile"></i> Điện thoại
+                </button>
+            </li>
+            <li>
+                <button type="button" onclick="location.href='/maytinhbang.html'">
+                    <i class="fa-solid fa-tablet"></i> Máy tính bảng
+                </button>
+            </li>
+            <li>
+                <button type="button" onclick="location.href='/pc.html'">
+                    <i class="fa-solid fa-desktop"></i> PC
+                </button>
+            </li>
+            <li>
+                <button type="button" onclick="location.href='/xaydungcauhinh.html'">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Xây dựng cấu hình PC
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <ul class="nav-list">
+        <li>
+            <button type="button" onclick="location.href='/dienthoai.html'" <%= active === 'dienthoai' ? 'aria-current="page"' : '' %>>
+                <i class="fa-solid fa-mobile"></i> Điện thoại
+            </button>
+        </li>
+        <li>
+            <button type="button" onclick="location.href='/maytinhbang.html'" <%= active === 'maytinhbang' ? 'aria-current="page"' : '' %>>
+                <i class="fa-solid fa-tablet"></i> Máy tính bảng
+            </button>
+        </li>
+        <li>
+            <button type="button" onclick="location.href='/pc.html'" <%= active === 'pc' ? 'aria-current="page"' : '' %>>
+                <i class="fa-solid fa-desktop"></i> PC
+            </button>
+        </li>
+        <li>
+            <button type="button" onclick="location.href='/xaydungcauhinh.html'" <%= active === 'xaydungcauhinh' ? 'aria-current="page"' : '' %>>
+                <i class="fa-solid fa-screwdriver-wrench"></i> Xây dựng cấu hình PC
+            </button>
+        </li>
+    </ul>
+</nav>
+
+<!-- XỬ LÝ SỰ KIỆN LIVE SEARCH -->
+<script>
+    let searchDebounceTimer = null;
+
+    function onSearchInput(value) {
+        const query = value.trim();
+        const dropdown = document.getElementById('search-suggestions-dropdown');
+
+        if (!dropdown) return;
+
+        // Nếu ô tìm kiếm rỗng -> Ẩn popup
+        if (!query) {
+            dropdown.classList.remove('show');
+            dropdown.innerHTML = '';
+            return;
+        }
+
+        // Debounce 200ms
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const products = await res.json();
+
+                if (!products || products.length === 0) {
+                    dropdown.innerHTML = `<div class="no-suggestion">Không tìm thấy sản phẩm gợi ý nào.</div>`;
+                } else {
+                    const topSuggests = products.slice(0, 5);
+                    
+                    // Render HTML khớp chuẩn 100% với Class trong style.css
+                    dropdown.innerHTML = topSuggests.map(item => {
+                        const price = item.variants && item.variants.length > 0 
+                            ? item.variants[0].price 
+                            : (typeof item.price === 'number' ? item.price.toLocaleString('vi-VN') + 'đ' : (item.price || 'Liên hệ'));
+
+                        return `
+                            <a href="/chitiet?id=${item._id}&type=${item.productType}" class="suggestion-item">
+                                <img src="${item.img}" alt="${item.name}" class="suggestion-img">
+                                <div class="suggestion-info">
+                                    <div class="suggestion-name">${item.name}</div>
+                                    <div class="suggestion-price">${price}</div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+                }
+
+                // Thêm class 'show' để hiện Popup theo đúng style.css
+                dropdown.classList.add('show');
+            } catch (err) {
+                console.error("Lỗi Live Search:", err);
+            }
+        }, 200);
+    }
+
+    // Tự động đóng Popup khi nhấp chuột ra ngoài
+    document.addEventListener('click', function(e) {
+        const wrapper = document.querySelector('.search-wrapper');
+        const dropdown = document.getElementById('search-suggestions-dropdown');
+        if (dropdown && wrapper && !wrapper.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+</script>

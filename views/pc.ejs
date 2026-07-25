@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục PC dựng sẵn chính hãng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dienthoai.css">
+</head>
+<body>
+    <%- include('partials/header', { active: 'pc' }) %>
+
+<main class="container_dienthoai">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="/index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">PC dựng sẵn</li>
+            </ol>
+        </nav>
+
+        <h1 class="page-title">PC DỰNG SẴN</h1>
+
+<section class="filter-section" aria-labelledby="filter-title">
+    <h2 class="filter-title" id="filter-title">Danh mục PC theo cấu hình</h2>
+    <div class="brand-tags">
+        <button type="button" class="brand-btn active" onclick="filterByBrand(event, 'all')">
+            <span>Tất cả</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Intel Core i9')">
+            <span>Intel Core i9</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'AMD Ryzen 9')">
+            <span>AMD Ryzen 9</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'RTX 5070Ti')">
+            <span>RTX 5070Ti</span>
+        </button>
+        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'RTX 5060Ti')">
+            <span>RTX 5060Ti</span>
+        </button>
+    </div>
+</section>
+
+        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp PC">
+            <div class="dropdowns-group">
+                <label for="filter-cpu" class="visually-hidden">Vi xử lý</label>
+                <select id="filter-cpu"><option value="">Vi xử lý</option></select>
+                <label for="filter-vga" class="visually-hidden">Card đồ hoạ</label>
+                <select id="filter-vga"><option value="">Card đồ hoạ</option></select>
+                <label for="filter-ram" class="visually-hidden">Dung lượng RAM</label>
+                <select id="filter-ram"><option value="">Dung lượng RAM</option></select>
+                <label for="filter-storage" class="visually-hidden">Ổ cứng</label>
+                <select id="filter-storage"><option value="">Ổ cứng</option></select>
+            </div>
+            <div class="sort-group">
+                <label for="sort-products">Sắp xếp theo:</label>
+                <select id="sort-products">
+                    <option value="featured">Nổi bật</option>
+                    <option value="price-asc">Giá thấp đến cao</option>
+                    <option value="price-desc">Giá cao đến thấp</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="products-grid-layout" id="PCs-container">
+            </div>
+
+        <div class="load-more-container">
+            <button type="button" class="load-more-btn">Xem thêm sản phẩm</button>
+        </div>
+
+    </main>
+
+    <%- include('partials/footer') %>
+<script>
+        const pcsContainer = document.getElementById('PCs-container');
+        let allPCsData = [];
+        let currentLimit = 20;
+        let allPCs = [];
+
+        function formatPcPrice(price) {
+            if (price === undefined || price === null || price === '') return 'Liên hệ';
+            if (typeof price === 'number') return price.toLocaleString('vi-VN') + 'đ';
+            return price;
+        }
+
+        fetch('/api/pcs')
+            .then(response => response.json())
+            .then(data => {
+                allPCsData = data;
+                renderPCsUI(allPCsData);
+            })
+            .catch(err => console.error('Lỗi tải dữ liệu PC:', err));
+
+        function renderPCsUI(pcList) {
+            if (!pcsContainer) return;
+            allPCs = pcList;
+
+            if (pcList.length === 0) {
+                pcsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93;">Không tìm thấy cấu hình PC nào phù hợp.</p>`;
+                toggleLoadMoreButton(false);
+                return;
+            }
+
+            const displayedPCs = pcList.slice(0, currentLimit);
+
+            pcsContainer.innerHTML = displayedPCs.map((pc, idx) => {
+                const currentId = pc._id || idx;
+                const displayRating = pc.rating ? Number(pc.rating).toFixed(1) : "0";
+
+                return `
+                    <a href="/chitiet?id=${currentId}&type=pc" class="product-card-link" style="text-decoration: none; color: inherit; display: flex;">
+                        <article class="product-card" id="pc-card-${idx}">
+                            <figure class="prod-img">
+                                <img src="${pc.img}" alt="${pc.name}">
+                            </figure>
+                            <div class="prod-info">
+                                <h3 class="prod-name">${pc.name}</h3>
+                                <div class="prod-price">${formatPcPrice(pc.price)}</div>
+                                <div class="prod-rating">
+                                    <i class="fa-solid fa-star"></i> ${displayRating}
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                `;
+            }).join('');
+
+            if (currentLimit >= pcList.length) {
+                toggleLoadMoreButton(false);
+            } else {
+                toggleLoadMoreButton(true);
+            }
+        }
+
+        function toggleLoadMoreButton(show) {
+            const loadMoreBtn = document.querySelector('.load-more-btn');
+            if (loadMoreBtn) loadMoreBtn.style.display = show ? 'inline-block' : 'none';
+        }
+
+        const loadMoreBtn = document.querySelector('.load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                currentLimit += 20;
+                renderPCsUI(allPCs);
+            });
+        }
+
+        function filterByBrand(e, brandName) {
+            currentLimit = 20;
+            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            if (e && e.target) {
+                const clickedButton = e.target.closest('.brand-btn');
+                if (clickedButton) clickedButton.classList.add('active');
+            }
+            if (brandName === 'all') {
+                renderPCsUI(allPCsData);
+            } else {
+                const filtered = allPCsData.filter(item => item.brand === brandName);
+                renderPCsUI(filtered);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+/* giohang.css */
+
+body {
+    background-color: #f5f5f7;
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0;
+}
+
+.cart-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Breadcrumb (dùng chung kiểu với dienthoai.css) */
+.breadcrumb {
+    margin-bottom: 15px;
+}
+
+/* 2. KHUNG DANH SÁCH (Thẻ ol) - NƠI KÍCH HOẠT FLEXBOX */
+.breadcrumb ol {
+    display: flex;
+    align-items: center; /* Giữ icon và các mục luôn thẳng hàng ngang */
+    gap: 6px;            /* Khoảng cách giữa chữ, dấu > và icon */
+    list-style: none;    /* BẮT BUỘC: Xóa bỏ hoàn toàn các dấu chấm tròn mặc định của thẻ li */
+    padding: 0;          /* Xóa padding mặc định của ol */
+    margin: 0;           /* Xóa margin mặc định của ol */
+    font-family: "Nunito Sans", sans-serif ;
+    font-size: 15px;
+}
+
+/* 3. CÁC PHẦN TỬ CON (Thẻ li, a) */
+.breadcrumb li {
+    font-family: "Nunito Sans", sans-serif;
+    color: #333; /* Màu mặc định cho chữ và dấu ">" */
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Định dạng riêng cho thẻ link Trang chủ */
+.breadcrumb li a {
+    font-family: "Nunito Sans", sans-serif; 
+    text-decoration: none;
+    color: #333;
+    display: inline-flex;
+    align-items: center; 
+    gap: 4px;            /* Khoảng cách giữa icon ngôi nhà và chữ Trang chủ */
+}
+
+/* Hiệu ứng khi di chuột vào link (Nếu muốn giao diện sinh động hơn) */
+.breadcrumb li a:hover {
+    color: #ff8d28;      /* Đổi sang màu cam thương hiệu khi hover */
+}
+
+/* TRẠNG THÁI TRANG HIỆN TẠI (Thẻ li có class active) */
+.breadcrumb li.active { 
+    font-family: "Nunito Sans", sans-serif; 
+    font-weight: 800;    /* Giữ nguyên độ đậm như bạn muốn */
+    color: #333; 
+}
+
+.cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 28px;
+    align-items: start;
+}
+
+/* ---------- Danh sách sản phẩm ---------- */
+.cart-items-box {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.cart-table-header {
+    display: grid;
+    grid-template-columns: 2.2fr 0.6fr 1fr 1fr 40px;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    font-weight: 700;
+    color: #555;
+}
+
+.cart-table-header label, .cart-table-header span {
+    font-family: "Nunito Sans", sans-serif; 
+}
+
+/* CONTAINER CHỨA CẢ Ô VÀ CHỮ (GIỮ NGUYÊN BỐ CỤC CỦA BẠN) */
+.cart-select-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+/* THAY ĐỔI CHÍNH XÁC VÀO Ô INPUT CHECKBOX */
+.cart-select-all input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; /* Ẩn giao diện checkbox mặc định thô kệch của trình duyệt */
+
+    width: 17px;       /* Tăng nhẹ lên 20px nhìn cho cân đối với chữ */
+    height: 17px;
+    border: 2px solid #cbd5e1; /* Viền xám nhẹ mặc định khi chưa chọn */
+    border-radius: 6px;        /* BO GÓC Ô CHECKBOX ĐẸP MẮT GIỐNG HÌNH MẪU */
+    background-color: #ffffff;
+    cursor: pointer;
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+/* Hiệu ứng đổi màu viền nhẹ khi di chuột qua */
+.cart-select-all input:hover {
+    border-color: #ff8d28;
+}
+
+/* TRẠNG THÁI KHI ĐƯỢC CHECKED (ĐỔI NỀN CAM) */
+.cart-select-all input:checked {
+    background-color: #ff8d28; /* Màu nền cam rực rỡ */
+    border-color: #ff8d28;     /* Viền màu cam đồng bộ */
+}
+
+/* TẠO DẤU TÍCH MÀU ĐEN/XÁM ĐẬM NẰM GỌN GÀNG BÊN TRONG KHI ĐƯỢC CHỌN */
+.cart-select-all input:checked::after {
+    content: "\f00c";                  /* Mã Unicode của icon fa-check */
+    font-family: "Font Awesome 6 Free";
+    font-size: 10px;
+    font-weight: 900;          /* Làm nét tích đậm lên */
+    color: #fff;            /* Màu đen/xám đậm chuẩn thiết kế */
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-label { text-align: center; }
+.col-label.col-qty {
+    display: block;
+    text-align: center;      /* Căn giữa chữ chữ trong phân vùng Grid */
+    margin: 0 auto;
+}
+
+.cart-items-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cart-item-row {
+    display: grid;
+    grid-template-columns: 40px 1.6fr 1fr 1fr 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+.cart-item-row:last-child { border-bottom: none; }
+
+.item-select input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; /* Ẩn giao diện checkbox mặc định thô kệch của trình duyệt */
+
+    width: 17px;       /* Tăng nhẹ lên 20px nhìn cho cân đối với chữ */
+    height: 17px;
+    border: 2px solid #cbd5e1; /* Viền xám nhẹ mặc định khi chưa chọn */
+    border-radius: 6px;        /* BO GÓC Ô CHECKBOX ĐẸP MẮT GIỐNG HÌNH MẪU */
+    background-color: #ffffff;
+    cursor: pointer;
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+/* Hiệu ứng đổi màu viền nhẹ khi di chuột qua */
+.item-select input:hover {
+    border-color: #ff8d28;
+}
+
+/* TRẠNG THÁI KHI ĐƯỢC CHECKED (ĐỔI NỀN CAM) */
+.item-select input:checked {
+    background-color: #ff8d28; /* Màu nền cam rực rỡ */
+    border-color: #ff8d28;     /* Viền màu cam đồng bộ */
+}
+
+/* TẠO DẤU TÍCH MÀU ĐEN/XÁM ĐẬM NẰM GỌN GÀNG BÊN TRONG KHI ĐƯỢC CHỌN */
+.item-select input:checked::after {
+    content: "\f00c";                  /* Mã Unicode của icon fa-check */
+    font-family: "Font Awesome 6 Free";
+    font-size: 10px;
+    font-weight: 900;          /* Làm nét tích đậm lên */
+    color: #fff;            /* Màu đen/xám đậm chuẩn thiết kế */
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.item-info img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f5f5f7;
+    flex-shrink: 0;
+}
+.item-name {
+    font-family: "Nunito Sans", sans-serif; 
+    font-size: 15px;
+    font-weight: 700;
+    color: #1c1c1e;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.item-unit-price, .item-total-price {
+    font-family: "Nunito Sans", sans-serif; 
+    font-size: 14px;
+    color: #333;
+}
+.item-unit-price {text-align: right;}
+.item-total-price { text-align: center; font-weight: 800; color: #FF8D28; }
+
+.item-qty-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid #e5e5ea;
+    border-radius: 20px;
+    padding: 4px 6px;
+    width: fit-content;
+    margin: 0 auto;
+}
+.item-qty-control i { font-size: 13px; }
+.qty-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    color: #333;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+.qty-btn:hover { background: #FF8D28; color: #fff; }
+.qty-value { font-family: "Nunito Sans", sans-serif; min-width: 18px; text-align: center; font-weight: 700; }
+
+.item-delete-btn {
+    border: none;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.item-delete-btn:hover { color: #e74c3c; }
+
+.cart-empty-msg {
+    text-align: center;
+    padding: 60px 0;
+    color: #777;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 15px;
+}
+.cart-empty-msg a { 
+    color: #FF8D28; 
+    font-family: "Nunito Sans", sans-serif; 
+    font-weight: 700; 
+}
+
+/* ---------- Khối thanh toán ---------- */
+.checkout-summary-box {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 20px;
+}
+
+.checkout-summary-box h2 {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0 0 18px;
+    color: #1c1c1e;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+    padding: 8px 0;
+}
+.summary-row span { font-family: "Nunito Sans", sans-serif; }
+
+.summary-total span {
+    border-top: 1px dashed #ddd;
+    margin-top: 6px;
+    padding-top: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1c1c1e;
+}
+.summary-total span:last-child { color: #FF8D28; }
+
+.voucher-form {
+    display: flex;
+    gap: 8px;
+    margin: 14px 0;
+}
+.voucher-form input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e5e5ea;
+    border-radius: 20px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13.5px;
+    outline: none;
+}
+.voucher-form input:focus { border-color: #FF8D28; }
+
+.apply-voucher-btn {
+    background: linear-gradient(to right, #ff5300, #FF8D28); 
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 0 18px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.checkout-btn {
+    width: 100%;
+    background: linear-gradient(to right, #ff5300, #FF8D28); 
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 10px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 21px;
+    font-weight: 750;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.checkout-btn:hover { opacity: 0.9; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+    .cart-table-header .col-label { display: none; }
+    .cart-item-row {
+        grid-template-columns: 30px 1fr;
+        row-gap: 8px;
+    }
+    .item-unit-price, .item-qty-control, .item-total-price {
+        grid-column: 2;
+        text-align: left;
+        margin: 0;
+        justify-content: flex-start;
+    }
+    .item-delete-btn { grid-column: 2; justify-self: start; }
+}

@@ -1,0 +1,959 @@
+/* Khởi tạo cơ bản để xóa các khoảng cách thừa của trình duyệt */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+/* Ẩn nội dung khỏi màn hình nhưng vẫn giữ cho trình đọc màn hình (accessibility) */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* -----------------------------------------------------------------
+   BẮT ĐẦU HỌC FLEXBOX Ở ĐÂY:
+   ----------------------------------------------------------------- */
+
+/* Cấu hình cho HỘP LỚN */
+.header-container {
+    background: linear-gradient(to right, #ff5300, #FF8D28); 
+    height: 100px;
+    padding: 0 60px; /* Tạo khoảng cách thụt lề 2 bên trái/phải */
+    
+    /* Kích hoạt Flexbox */
+    display: flex; 
+    
+    /* Căn các phần tử con dọc theo hàng ngang, đẩy đều ra 2 bên biên */
+    justify-content: space-between; 
+    
+    /* Căn giữa tất cả các phần tử con theo chiều dọc (chiều cao 100px) */
+    align-items: center; 
+}
+
+/* 1. Trang trí Logo */
+.logo {
+    text-decoration: none;
+    color: #FFFFFF;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+/* 2. Trang trí Khung tìm kiếm (Nó cũng là một Flex cụm nhỏ) */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #F2F2F7;
+    border: 1px #999999 solid;
+    border-radius: 100px;
+    padding: 5px 5px 5px 20px;
+    width: 500px;
+}
+
+.search-box input {
+    flex: 1; /* Chiếm toàn bộ không gian trống còn lại trong thanh tìm kiếm */
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 18px;
+    color: #333;
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 200;
+}
+
+.search-btn {
+    width: 45px;
+    height: 45px;
+    background: #FF8D28;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+}
+
+.search-btn .material-symbols-outlined {
+    color: #fff;
+}
+/* =========================================================
+   BOX GỢI Ý TÌM KIẾM TRỰC TIẾP (AUTOCOMPLETE DROPDOWN)
+   ========================================================= */
+.search-suggestions-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    max-height: 400px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e2e8f0;
+    overflow-y: auto;
+    z-index: 2000;
+    display: none;
+}
+
+.search-suggestions-dropdown.show {
+    display: block;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #fff7ed;
+}
+
+.suggestion-img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.suggestion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow: hidden;
+}
+
+.suggestion-name {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tô đỏ chữ khớp với từ khóa tìm kiếm */
+.suggestion-name mark {
+    background-color: transparent;
+    color: #ff8d28;
+    font-weight: 800;
+}
+
+.suggestion-price {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ea580c;
+}
+
+.no-suggestion {
+    padding: 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* 3. Trang trí nhóm nút bên phải (Cũng dùng Flex để xếp Đăng nhập & Giỏ hàng cạnh nhau) */
+.header-actions {
+    display: flex;
+    gap: 20px; /* Tạo khoảng cách giữa 2 nút là 20px */
+}
+
+/* Cấu hình chung cho cả 2 nút */
+.btn {
+    text-decoration: none; /* Bỏ gạch chân mặc định của thẻ <a> */
+    font-size: 18px;
+    font-weight: 700;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.btn-login {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 28;
+    color: #FFFFFF;
+}
+
+.btn-cart i, .btn-login i {
+    margin-right: 10px; 
+    /* Bạn vẫn có thể dùng font-size để phóng to/thu nhỏ icon theo ý muốn */
+    font-size: 24px; /* Chỉnh kích thước icon */
+    
+}
+
+.btn-cart {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 28;
+    background: white;
+    color: #FF8D28;
+    border-radius: 30px;
+}
+
+/* =================================================================
+   CSS CHO THANH ĐIỀU HƯỚNG PHÍA DƯỚI (NAV BAR)
+   ================================================================= */
+
+.nav-bar {
+    background: #FFFFFF; 
+    
+    /* -----------------------------------------------------------------
+       1. SỬA ĐỔI CHIỀU CAO: Dùng min-height thay vì height cố định.
+       Khi người dùng zoom quá to, thanh nav có thể tự nới rộng chiều cao 
+       xuống dưới để ôm trọn chữ mà không làm vỡ form.
+       ----------------------------------------------------------------- */
+    min-height: 55px;        
+    padding: 10px 75px;  /* Thay 0 thành 10px để khi có dòng mới trông vẫn cân đối */
+    border-bottom: 1px solid #E5E5EA; 
+    
+    display: flex;
+    align-items: center;
+    
+    /* -----------------------------------------------------------------
+       2. SỬA ĐỔI GAP & FLEX-WRAP:
+       Thay vì dùng khoảng cách cứng 200px, hãy dùng justify-content hoặc gap nhỏ, 
+       kèm flex-wrap để tự động xuống dòng khi màn hình hết chỗ chứa.
+       ----------------------------------------------------------------- */
+    position: -webkit-sticky; /* Hỗ trợ cho trình duyệt Safari cũ */
+    position: sticky;        /* Kích hoạt chế độ dính thông minh */
+    top: 0;                  /* Dính khi chạm mép trên cùng của màn hình */
+    z-index: 1000;           /* Đảm bảo luôn nổi trên các phần tử khác */
+    
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. Trang trí nút Menu tròn màu cam nhạt (Giữ nguyên cấu trúc) */
+.menu-toggle {
+    width: 45px;
+    height: 45px;
+    background: #FFF0E0; 
+    border-radius: 50%;   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;      
+    position: relative; 
+    
+    /* Đảm bảo hiệu ứng chuyển đổi màu nền diễn ra mượt mà */
+    transition: background-color 0.2s ease-in-out; 
+}
+.menu-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    
+    /* BỔ SUNG 2 DÒNG NÀY ĐỂ KHỬ SẠCH VIỀN NỀN MẶC ĐỊNH */
+    border: none;
+    background: transparent;
+    
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font: inherit;
+    border-radius: 50%;
+}
+
+.menu-toggle .material-symbols-outlined, 
+.menu-toggle i {
+    color: #FF8D28; 
+    font-size: 26px;
+    
+    /* Đảm bảo hiệu ứng chuyển đổi màu icon diễn ra mượt mà */
+    transition: color 0.2s ease-in-out;
+}
+
+/* HIỆU ỨNG KHI RÊ CHUỘT VÀO NÚT MENU TRÒN */
+.menu-toggle:hover {
+    background-color: #FF8D28; /* Nền chuyển sang màu cam đậm */
+}
+
+.menu-toggle:hover .material-symbols-outlined {
+    color: #FFFFFF; /* Ba dấu gạch ngang chuyển sang màu trắng tinh nổi bật */
+}
+
+/* 2. Cấu hình danh sách các mục (ul) */
+.nav-list {
+    list-style: none; 
+    display: flex;    
+    flex-wrap: wrap;     /* THÊM DÒNG NÀY: Ép danh sách tự xuống hàng khi chữ nở to do zoom */
+    
+    /* -----------------------------------------------------------------
+       3. HẠ THẤP GAP CỐ ĐỊNH:
+       Tuyệt đối không để gap: 350px. Để các mục tự giãn đều rộng rãi, 
+       chúng ta dùng gap vừa phải (ví dụ 40px - 60px) kết hợp linh hoạt.
+       ----------------------------------------------------------------- */
+    gap: 40px;           /* Khoảng cách hợp lý giữa các mục (Điện thoại, Laptop...) */
+    
+    flex-grow: 1;        /* Cho phép danh sách tự chiếm không gian còn lại */
+    justify-content: space-evenly; /* TỰ ĐỘNG chia đều khoảng trống, zoom đến đâu giãn đến đấy */   
+}
+
+/* =================================================================
+   CSS CHỈNH SỬA NÚT BẤM TRONG THANH ĐIỀU HƯỚNG (NAV LIST BUTTON)
+   ================================================================= */
+
+.nav-list li {
+    display: flex;
+    align-items: center;
+}
+
+.nav-list button {
+    font-family: "Montserrat", sans-serif;
+    color: #555;        
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;         
+    align-items: center;
+    white-space: nowrap; /* Chống ngắt chữ xuống dòng nửa chừng */
+    
+    /* RESET STYLE MẶC ĐỊNH CỦA BUTTON THÀNH THANH PHẲNG TRONG SUỐT */
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Tùy chỉnh icon nằm bên trong button */
+.nav-list button i {
+    margin-right: 8px; 
+    color: #555;    
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+/* HIỆU ỨNG RÊ CHUỘT (HOVER) & ĐƯỢC BẤM (ACTIVE) TOÀN DIỆN */
+.nav-list button:hover {
+    color: #FF8D28;
+    background-color: none; /* Tạo một lớp nền cam nhạt bao quanh nút khi hover */
+}
+
+.nav-list button:hover i {
+    color: #FF8D28; /* Icon tự động chuyển sang màu cam đồng bộ với chữ */
+}
+
+/* -----------------------------------------------------------------
+   CSS CẤU HÌNH MENU THẢ XUỐNG (DROPDOWN)
+   ----------------------------------------------------------------- */
+.dropdown-menu {
+    position: absolute;   /* "Bay" lên độc lập, không chiếm diện tích */
+    top: 43px;            /* Cách nút tròn menu một khoảng 50px */
+    left: 0;              /* Căn thẳng lề trái với nút menu */
+    width: 240px;         /* Chiều rộng của bảng menu dọc */
+    background: #FFFFFF;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Tạo bóng đổ nhẹ cho sang */
+    border-radius: 8px;
+    padding: 10px 0;
+    list-style: none;
+    z-index: 999;         /* Đảm bảo luôn nằm đè lên hình ảnh hay banner phía dưới */
+    
+    /* BAN ĐẦU ẨN MENU ĐI */
+    display: none; 
+}
+
+/* KHI DI CHUỘT (HOVER) VÀO NÚT MENU TRÒN -> HIỆN MENU CON KHỐI DỌC */
+.menu-toggle:hover .dropdown-menu {
+    display: block;
+}
+
+/* Định dạng từng dòng trong menu thả xuống */
+/* Tìm và bổ sung/sửa lại đoạn định dạng cho các nút con trong menu dọc */
+.dropdown-menu li button {
+    display: flex;
+    align-items: center;
+    width: 100%;             /* Ép nút chiếm hết chiều ngang của bảng trắng */
+    padding: 10px 20px;     /* Giữ khoảng cách thụt lề giống như trước */
+    
+    /* CHÌA KHÓA Ở ĐÂY: Xóa sạch viền và nền mặc định của trình duyệt */
+    border: none;
+    background: transparent;
+    
+    color: #333333;          /* Chữ màu xám đậm đen */
+    font-size: 15px;
+    font-weight: 500;
+    font-family: "Nunito Sans", sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s; /* Hiệu ứng mượt mà khi hover */
+}
+
+/* HIỆU ỨNG HOVER: Khi rê chuột vào từng mục button trong menu dọc */
+.dropdown-menu li button:hover {
+    background: #f8f9fa; /* Đổi nền xám nhạt */
+    color: #FF8D28;       /* Chữ chuyển sang màu cam */
+}
+
+/* Căn chỉnh lại icon nằm bên trong button của menu dọc */
+.dropdown-menu li button .material-symbols-outlined,
+.dropdown-menu li button i {
+    margin-right: 12px;
+    font-size: 20px;
+    color: #666666;                  /* Màu icon mặc định */
+    transition: color 0.2s;
+}
+
+/* Khi hover vào button thì màu icon cũng đổi sang cam luôn */
+.dropdown-menu li button:hover .material-symbols-outlined,
+.dropdown-menu li button:hover i {
+    color: #FF8D28;
+}
+
+/* Dấu mũi tên nhọn (›) ở cuối mỗi dòng */
+.chevron-right {
+    margin-left: auto;    /* Đẩy dấu mũi tên về sát góc bên phải */
+    color: #cccccc;
+    font-size: 18px;
+}
+
+
+/* =================================================================
+   CSS CHO KHỐI BANNER QUẢNG CÁO PHỤ (PHÍA DƯỚI)
+   ================================================================= */
+
+.banner-container {
+    width: 100%;            /* Co giãn mượt mà theo màn hình */
+    max-width: 1440px;      /* Giới hạn rộng tối đa chuẩn lề phối hợp với Header */
+    margin: 30px auto;      /* SỬA TỪ 500px THÀNH 30px: Khoảng cách vừa vặn với khối trên */
+    padding: 0 60px;        /* SỬA THÀNH 0 60px: Chỉ thụt lề trái/phải, không làm dầy chiều dọc */
+}
+
+.banner-container a {
+    display: block;         
+    width: 100%;
+    overflow: hidden;       
+    border-radius: 12px;    
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05); 
+}
+
+.banner-container img {
+    width: 100%;            
+    height: 300px;          
+    object-fit: cover;      
+    object-position: center;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.banner-container a:hover img {
+    transform: scale(1.01);
+}
+
+/* =================================================================
+   CSS CHO THANH TRƯỢT ẢNH NGANG (SLIDER CHÍNH)
+   ================================================================= */
+
+.slider-wrapper {
+    width: 100%;            /* SỬA TỪ 75% THÀNH 100%: Để hộp bọc ngoài tự giãn theo khung cha */
+    max-width: 1440px;      /* THÊM MỚI: Giới hạn khung trượt chuẩn lề 1440px */
+    margin: 20px auto;      /* THÊM MỚI: Tự động căn giữa toàn bộ cụm trượt và nút bấm */
+    padding: 0 60px;        /* THÊM MỚI: Thụt lề 2 bên 60px để mép ảnh thẳng hàng với lề trên */
+    position: relative;     /* Gốc để 2 mũi tên bám vào */
+}
+
+.slider-container {
+    width: 100%;            /* SỬA TỪ 75% THÀNH 100%: Ép khung trượt lấp đầy hộp wrapper */
+    display: flex;            
+    overflow-x: auto;         
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth;  
+    border-radius: 12px;    /* THÊM MỚI: Bo góc cho cả cụm slider trông rất mượt */
+    
+    /* Ẩn hoàn toàn thanh cuộn thô kệch đi vì đã có nút bấm, giúp giao diện sạch sẽ */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Định hình cho từng tấm ảnh quảng cáo */
+.slide-item {
+    flex: 0 0 100%;           
+    width: 100%;
+    scroll-snap-align: start; 
+}
+
+.slide-item img {
+    width: 100%;
+    height: 450px;          
+    object-fit: cover;      
+    object-position: center;
+    display: block;
+}
+
+/* =================================================================
+   NÚT MŨI TÊN ĐIỀU HƯỚNG SLIDER
+   ================================================================= */
+.arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.9); /* Tăng độ đục màu trắng nền nhìn cho rõ */
+    border: none;
+    border-radius: 50%;
+    color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15); /* Tăng bóng đổ cho nút nổi bật hẳn lên */
+    transition: all 0.2s ease;
+}
+
+.arrow-btn:hover {
+    background: rgba(255, 141, 40, 1); /* Màu cam đặc hẳn khi hover */
+    color: white;                        
+}
+
+/* Đẩy nút Trái thụt lề vào bên trong viền ảnh một chút (đã tính padding 60px) */
+.prev-btn {
+    left: 80px; 
+}
+
+/* Đẩy nút Phải thụt lề vào bên trong viền ảnh */
+.next-btn {
+    right: 80px;
+}
+
+.arrow-btn .material-symbols-outlined {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* =================================================================
+   CSS CHO KHỐI DANH MỤC ĐIỆN THOẠI NỀN CAM
+   ================================================================= */
+
+.product-section_phone {
+    max-width: 1440px;
+    margin: 40px auto;
+    padding: 30px 40px; /* Thụt lề trong khối */
+    background: linear-gradient(to bottom, #FF8D28, #FFFFFF); /* Nền cam đổ gradient nhẹ cực đẹp */
+    border-radius: 24px; /* Bo tròn mạnh toàn bộ hộp lớn */
+}
+
+/* Tiêu đề ĐIỆN THOẠI */
+.section-title {
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+}
+
+/* 1. KỸ THUẬT GRID CHIA 3 CỘT BANNER PHÍA TRÊN */
+.product-banners-grid {
+    display: grid;
+    grid-template-columns: 2.5fr 2fr 2.5fr; /* Tỷ lệ độ rộng 3 cột */
+    grid-template-rows: 170px 170px;       /* 2 hàng, mỗi hàng cao 170px (tổng 340px) */
+    gap: 16px;
+    margin-bottom: 15px;
+}
+
+.banner-item {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    overflow: hidden; /* Giúp bo góc của ảnh không bị lố ra ngoài */
+    border-radius: 16px; 
+}
+
+/* 2. Khử khoảng cách mặc định của thẻ <figure> nằm ở giữa */
+.banner-item figure {
+    width: 100%;
+    height: 100%;
+    margin: 0; 
+}
+
+.banner-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.banner-item:hover img {
+    transform: scale(1.02); 
+}
+
+/* Định vị vị trí từng khối trong ô Grid */
+.grid-big {
+    grid-row: 1 / span 2; /* Chiếm cả 2 hàng ở cột 1 */
+}
+.grid-small-top {
+    grid-column: 2;
+    grid-row: 1;
+}
+.grid-small-bottom {
+    grid-column: 2;
+    grid-row: 2;
+}
+.grid-medium {
+    grid-row: 1 / span 2; /* Chiếm cả 2 hàng ở cột 3 */
+}
+
+/* 2. THANH BỘ LỌC FILTER BAR */
+.filter-bar-phone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.filter-tags-phone {
+    display: flex;
+    gap: 12px;
+}
+
+.tag-btn-phone {
+    text-decoration: none;
+    background: white;
+    color: #333333;
+    width: 120px;
+    text-align: center;
+    padding: 10px 0px;
+    border-radius: 100px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+.tag-btn-phone:hover {
+    background: #FF8D28;
+    color: white;
+}
+
+/* Nút "xem tất cả" màu cam đậm */
+.view-all-btn {
+    text-decoration: none;
+    background: #FF8D28;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-family: "Nunito Sans";
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* 3. DANH SÁCH 5 THẺ SẢN PHẨM PHÍA DƯỚI */
+.product-list {
+    display: flex;
+    gap: 16px; /* Khoảng cách giữa các thẻ */
+}
+
+/* Từng chiếc thẻ sản phẩm trắng */
+.product-card {
+    flex: 1; /* Chia đều 5 hộp bằng nhau khít 100% chiều ngang */
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px); /* Nhấc nhẹ thẻ lên khi di chuột */
+}
+
+.prod-img {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.prod-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.prod-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.prod-name {
+    font-size: 15px;
+    color: #333333;
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 650;
+    line-height: 1.4;
+    height: 40px; /* Khóa chiều cao để tên dài 2 dòng không làm lệch thẻ */
+    overflow: hidden;
+}
+
+/* Các nhãn dung lượng bộ nhớ */
+/* 1. HỘP CHỨA CÁC NHÃN TÙY CHỌN DUNG LƯỢNG */
+.prod-variants {
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 35px;
+    align-items: center;
+    scrollbar-width: none;
+}
+.prod-variants::-webkit-scrollbar { display: none; }
+.prod-variants span {
+    font-size: 10px;
+    border: 1px solid #e5e5ea;
+    padding: 2px 2px;
+    border-radius: 8px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.prod-variants span.active {
+    font-family: "Nunito Sans", sans-serif;
+    border-color: #ff8d28;
+    color: #ff8d28;
+    background-color: #fff5eb;
+}
+
+/* 3. HIỆU ỨNG ACTIVE KHI ĐƯỢC CHỌN */
+.prod-variants span.active {
+    font-family: "Nunito Sans", sans-serif;
+    border-color: #FF8D28;
+    color: #FF8D28;
+    background-color: #FFF0E0;
+    font-weight: 600;
+}
+
+.prod-price {
+    font-size: 20px;
+    color: #FF8D28;
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 700;
+    margin-top: auto; /* Đẩy giá xuống đáy thẻ */
+}
+
+.prod-rating {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    color: #666666;
+}
+
+.prod-rating i {color: #FBC02D;}
+
+
+/* =================================================================
+   CSS CHO THANH CHỌN HÃNG (FILTER BAR) MÁY TÍNH BẢNG
+   ================================================================= */
+.product-section_tablet {
+    max-width: 1440px;
+    margin: 40px auto;
+    padding: 30px 40px; /* Thụt lề trong khối */
+    background: linear-gradient(to bottom, #28cbff, #FFFFFF); /* Nền cam đổ gradient nhẹ cực đẹp */
+    border-radius: 24px; /* Bo tròn mạnh toàn bộ hộp lớn */
+}
+
+.filter-bar-tablet {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-tags-tablet {
+    display: flex;
+    gap: 12px;
+}
+
+.tag-btn-tablet {
+    text-decoration: none;
+    background: white;
+    color: #333333;
+    width: 180px;
+    text-align: center;
+    padding: 10px 0px;
+    border-radius: 100px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+
+/* =================================================================
+   1. CSS CHO THANH CHỌN HÃNG (FILTER BAR) MÁY TÍNH BẢNG
+   ================================================================= */
+
+
+/* Phong cách chung cho các nút chọn hãng */
+.filter-btn {
+    font-family: "Montserrat", sans-serif;
+    padding: 10px 24px;
+    border: 1px solid #E5E5EA;
+    background-color: #FFFFFF;
+    color: #333333;
+    border-radius: 25px; /* Bo tròn viền giống hình thiết kế */
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.tag-btn-tablet:hover {
+    background-color: #28cbff;
+    color: #FFFFFF;
+}
+
+/* Nút được bấm chọn (Active) - Tự động nổi bật viền cam chữ cam hoặc nền cam tùy bạn phối */
+.tag-btn-tablet.active {
+    background-color: #FF8D28;
+    color: #FFFFFF;
+    border-color: #FF8D28;
+    font-weight: 600;
+}
+
+
+/* =================================================================
+   2. BỔ SUNG ĐỒNG BỘ NÚT BIẾN THỂ DUNG LƯỢNG KHI ĐƯỢC CHỌN (ACTIVE)
+   ================================================================= */
+/* CSS áp dụng chung cho cả nút dung lượng điện thoại lẫn máy tính bảng khi bấm chọn */
+.prod-variants {
+    font-family: "Nunito Sans", sans-serif;
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 28px;
+    align-items: center;
+    scrollbar-width: none;
+}
+.prod-variants::-webkit-scrollbar { display: none; }
+.prod-variants span {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 10px;
+    color: #999;
+    border: 1px solid #e5e5ea;
+    padding: 2px 6px;
+    border-radius: 10px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.prod-variants span.active {
+    font-family: "Nunito Sans", sans-serif;
+    border-color: #ff8d28;
+    color: #ff8d28;
+    background-color: #fff5eb;
+}
+
+.tag-btn-tablet.active, .view-all-btn.active {
+    background-color: #FF8D28;
+    color: #FFFFFF !important;
+    border-color: #FF8D28;
+    font-weight: 600;
+}
+
+
+/* =================================================================
+   CSS CHO THANH CHỌN HÃNG (FILTER BAR) PC
+   ================================================================= */
+.product-section_pc {
+    max-width: 1440px;
+    margin: 40px auto;
+    padding: 30px 40px; /* Thụt lề trong khối */
+    background: linear-gradient(to bottom, #5328ff, rgba(255, 40, 40, 0.5), #FFFFFF); 
+    border-radius: 24px; /* Bo tròn mạnh toàn bộ hộp lớn */
+}
+
+.filter-bar-pc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.filter-tags-pc {
+    display: flex;
+    gap: 12px;
+}
+
+.tag-btn-pc {
+    text-decoration: none;
+    background: white;
+    color: #333333;
+    width: 180px;
+    text-align: center;
+    padding: 10px 0px;
+    border-radius: 100px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.tag-btn-pc:hover {
+    background-color: #5328ff;
+    color: #FFFFFF;
+}
+
+
+
+
+
+.site-footer {
+    background: #1c1c1e;
+    color: #e5e5ea;
+    text-align: center;
+    padding: 24px 20px;
+    margin-top: 40px;
+    font-size: 14px;
+}
+
+/* Khóa định dạng cho thẻ bao bọc sản phẩm */
+.product-card-link {
+    text-decoration: none !important; /* Xóa gạch chân chữ */
+    color: inherit !important;           /* Giữ nguyên toàn bộ màu chữ nguyên bản */
+    display: block;
+}
+
+/* Hiệu ứng nhấc nhẹ khi di chuột qua card cho sinh động */
+.product-card-link:hover .product-card {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease-in-out;
+}

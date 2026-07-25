@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Báo Giá Vật Tư, Thiết Bị - 5KHY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Nhúng file CSS riêng biệt -->
+    <link rel="stylesheet" href="/css/baogia-in.css">
+</head>
+<body>
+
+    <div class="print-page-container">
+        <header class="print-header">
+            <p class="brand-logo">5KHY</p>
+            <address class="company-info">
+                <strong>CÔNG TY CỔ PHẦN CÔNG NGHỆ 5KHY</strong><br>
+                Trụ sở: Nam Cần Thơ, Q. Ninh Kiều, TP. Cần Thơ<br>
+                Hotline: 1900 5KHY | Email: info@5khy.com.vn<br>
+                Website: www.5khy.com.vn
+            </address>
+        </header>
+
+        <main>
+            <h1 class="doc-title">BẢNG BÁO GIÁ VẬT TƯ, THIẾT BỊ</h1>
+
+            <p class="meta-info">
+                <span id="print-date">Ngày báo giá: --/--/----</span>
+                <span>Đơn vị tính: <strong>VND</strong></span>
+            </p>
+
+            <table class="items-table">
+                <caption class="visually-hidden">Danh sách linh kiện trong cấu hình PC đã chọn</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 40px;">STT</th>
+                        <th scope="col" style="width: 80px;">Mã SP</th>
+                        <th scope="col" style="width: 70px;">Hình ảnh</th>
+                        <th scope="col">Tên sản phẩm</th>
+                        <th scope="col" style="width: 80px;">Bảo hành</th>
+                        <th scope="col" style="width: 60px;">Số lượng</th>
+                        <th scope="col" style="width: 100px;">Đơn giá</th>
+                        <th scope="col" style="width: 110px;">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="print-items-body">
+                    <!-- JS sẽ render dữ liệu linh kiện vào đây -->
+                </tbody>
+            </table>
+
+            <section class="summary-section" aria-label="Tổng kết chi phí">
+                <div class="summary-row">
+                    <span>Phí vận chuyển</span>
+                    <span style="color: #0f172a; font-weight: 700;">0 VND</span>
+                </div>
+                <div class="summary-row">
+                    <span>Chi phí khác</span>
+                    <span style="color: #0f172a; font-weight: 700;">0 VND</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Tổng tiền thanh toán</span>
+                    <span id="print-total-price">0 VND</span>
+                </div>
+            </section>
+
+            <div class="action-buttons">
+                <button type="button" class="btn-action btn-rebuild" onclick="window.location.href='/xaydungcauhinh.html'">XÂY LẠI CẤU HÌNH</button>
+                <button type="button" class="btn-action btn-print" onclick="window.print()">IN ĐƠN HÀNG</button>
+            </div>
+
+            <p class="note-text">
+                * Quý khách lưu ý: 5KHY đang áp dụng chương trình ưu đãi tri ân đối với các dòng Mainboard, VGA, Nguồn khi build trọn bộ PC.
+            </p>
+        </main>
+
+        <footer class="print-footer">
+            <p>
+                Để biết thêm chi tiết, vui lòng liên hệ<br>
+                Hotline: 1900 5KHY (8h00 - 21h30 hàng ngày)
+            </p>
+            <p style="font-weight: 800; color: #FF8D28;">
+                5KHY CHÂN THÀNH CẢM ƠN QUÝ KHÁCH!
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function formatVND(num) {
+            return num.toLocaleString('vi-VN') + 'đ';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedConfigs = localStorage.getItem('pc_builder_configs');
+            const activeConfigId = localStorage.getItem('active_print_config') || '1';
+
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+            document.getElementById('print-date').textContent = `Ngày báo giá: ${timeStr}`;
+
+            if (!savedConfigs) return;
+
+            const configs = JSON.parse(savedConfigs);
+            const currentList = configs[activeConfigId] || [];
+            const selectedParts = currentList.filter(i => i.qty > 0 && i.name);
+
+            const tbody = document.getElementById('print-items-body');
+            let grandTotal = 0;
+
+            if (selectedParts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Chưa có linh kiện nào trong cấu hình.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = selectedParts.map((item, idx) => {
+                const itemTotal = item.price * item.qty;
+                grandTotal += itemTotal;
+                const spCode = (item.key || 'SP').toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+
+                return `
+                    <tr>
+                        <td style="text-align: center; font-weight: 700;">${idx + 1}</td>
+                        <td style="text-align: center; font-size: 11px; font-weight: 700; color: #64748b;">${spCode}</td>
+                        <td>
+                            <img src="${item.img}" class="prod-img" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'">
+                        </td>
+                        <td>
+                            <div class="prod-name">${item.name}</div>
+                        </td>
+                        <td style="text-align: center;">36 Tháng</td>
+                        <td style="text-align: center; font-weight: 800;">${item.qty}</td>
+                        <td style="text-align: right; font-weight: 500;">${formatVND(item.price)}</td>
+                        <td style="text-align: right; font-weight: 800;">${formatVND(itemTotal)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('print-total-price').textContent = formatVND(grandTotal);
+        });
+    </script>
+</body>
+</html>

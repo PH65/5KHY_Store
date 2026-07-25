@@ -1,0 +1,750 @@
+/* chitiet.css - ĐỒNG BỘ LAYOUT CHI TIẾT SẢN PHẨM */
+body {
+    background-color: #ffffff;
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0;
+}
+
+.detail-container {
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Breadcrumb chỉn chu */
+.breadcrumb ol {
+    display: flex;
+    align-items: center; /* Giữ icon và các mục luôn thẳng hàng ngang */
+    gap: 6px;            /* Khoảng cách giữa chữ, dấu > và icon */
+    list-style: none;    /* BẮT BUỘC: Xóa bỏ hoàn toàn các dấu chấm tròn mặc định của thẻ li */
+    padding: 0;          /* Xóa padding mặc định của ol */
+    margin: 0;           /* Xóa margin mặc định của ol */
+    margin-bottom: 25px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 15px;
+}
+
+/* CÁC PHẦN TỬ CON (Thẻ li, a) */
+.breadcrumb li {
+    font-family: "Nunito Sans", sans-serif;
+    color: #333; /* Màu mặc định cho chữ và dấu ">" */
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Định dạng riêng cho thẻ link Trang chủ */
+.breadcrumb li a {
+    font-family: "Nunito Sans", sans-serif; 
+    text-decoration: none;
+    color: #333;
+    display: inline-flex;
+    align-items: center; 
+    gap: 4px;            /* Khoảng cách giữa icon ngôi nhà và chữ Trang chủ */
+}
+
+/* Hiệu ứng khi di chuột vào link */
+.breadcrumb li a:hover {
+    color: #ff8d28;      /* Đổi sang màu cam thương hiệu khi hover */
+}
+
+/* TRẠNG THÁI TRANG HIỆN TẠI (Thẻ li có class active) */
+.breadcrumb li.active { 
+    font-family: "Nunito Sans", sans-serif; 
+    font-weight: 800;    
+    color: #333; 
+}
+
+/* ĐỊNH DẠNG KHÓA CỨNG ICON GOOGLE */
+.breadcrumb .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined'; /* Khóa font gốc của icon */
+    font-size: 25px;     
+    line-height: 1;      /* Chống lệch dòng */
+}
+
+.product-main-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #111;
+}
+.prod-rating-top {
+    color: #ff8d28;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Khung chia 2 cột */
+.product-main-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 40px;
+}
+
+/* CỘT TRÁI: SLIDE ẢNH */
+.main-image-box {
+    position: relative;
+    width: 100%;
+    height: 450px; /* Chiều cao cố định cho khung */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff; 
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #f1f1f5;
+}
+.main-image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Co giãn vừa vặn không móp méo ảnh */
+    transition: opacity 0.2s ease-in-out;
+}
+.slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #f4f4f7;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8d28;
+}
+.prev-btn { left: 15px; }
+.next-btn { right: 15px; }
+
+/* Thư viện ảnh nhỏ (Thumbnail) */
+#thumb-list {
+    display: flex;   /* Sử dụng flexbox để các phần tử xếp hàng ngang */
+    flex-direction: row; 
+    justify-content: flex-start; /* Căn lề trái hàng ảnh */
+    gap: 12px;                  
+    margin-top: 15px;           
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.thumb-item {
+    width: 70px;
+    height: 70px;
+    border: 1.5px solid #e1e1e5; 
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    padding: 0;
+    font: inherit;
+}
+
+/* Ảnh thu nhỏ bên trong ô */
+.thumb-item img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+/* Khi di chuột qua (Hover) */
+.thumb-item:hover {
+    border-color: #ff8d28; 
+}
+
+/* TRẠNG THÁI ĐANG ĐƯỢC CHỌN (ACTIVE) */
+.thumb-item.active {
+    border-color: #ff8d28;      
+    box-shadow: 0 0 0 2px rgba(255, 141, 40, 0.2); 
+}
+
+/* Khung mô tả ngắn & Video */
+.product-desc-box {
+    margin-top: 30px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+}
+.video-preview-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+.video-thumb { width: 100%; height: 200px; object-fit: cover; filter: brightness(0.9); }
+.play-video-btn {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff8d28;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+/* Khung bọc giới hạn chiều cao ban đầu */
+.desc-wrapper {
+    position: relative;
+    max-height: 200px; /* Chiều cao tối đa khi chưa bấm "Xem thêm" */
+    overflow: hidden;  /* Ẩn phần chữ bị tràn xuống dưới */
+    transition: max-height 0.4s ease-in-out; /* Tạo chuyển động bung ra mượt mà */
+}
+
+/* Lớp phủ chuyển sắc mờ (Gradient từ trong suốt sang trắng) ở đáy khung */
+.blur-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Độ cao của vùng che mờ */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #ffffff);
+    pointer-events: none; /* Click xuyên qua lớp mờ này thoải mái */
+    transition: opacity 0.3s ease;
+}
+
+/* Định dạng nút bấm "Xem thêm" màu cam chuẩn chỉnh */
+.btn-read-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 15px auto 25px auto; /* Căn giữa nút bấm */
+    background: #fff;
+    color: #ff8d28;
+    border: 1px solid #ff8d28;
+    padding: 8px 30px;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 141, 40, 0.1);
+    transition: all 0.2s ease;
+}
+
+.btn-read-more:hover {
+    background: #ff8d28;
+    color: #fff;
+}
+
+.btn-read-more .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Khung đánh giá lớn bên dưới */
+.rating-summary-card {
+    border: 1px solid #e5e5ea;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: center;
+    gap: 20px;
+}
+.rating-big-num { text-align: center; }
+.rating-big-num .num { font-family: "Nunito Sans", sans-serif; font-size: 48px; font-weight: 800; color: #ff8d28; }
+.rating-big-num i {
+    font-size: 40px;
+    color: #FBC02D;
+}
+.rating-bars-group { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.bar { flex: 1; height: 8px; background: #e5e5ea; border-radius: 4px; overflow: hidden; }
+.bar .fill { height: 100%; background: #ff8d28; }
+.btn-review-now {
+    background: linear-gradient(to right, #ff5300, #FF8D28);  
+    color: white; 
+    border: none; 
+    padding: 12px; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    cursor: pointer;
+}
+/* Khung điền đánh giá liền kề */
+.review-form-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+    display: none; /* Mặc định ẩn, bấm nút ĐÁNH GIÁ NGAY mới mở */
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.review-star-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.stars-input {
+    display: flex;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.stars-input i {
+    font-size: 22px;
+    color: #d1d5db; /* Màu xám khi chưa chọn */
+    transition: color 0.2s ease;
+}
+
+.stars-input i.active,
+.stars-input i:hover {
+    color: #f59e0b; /* Màu vàng cam khi chọn */
+}
+
+.review-form-box .form-group {
+    margin-bottom: 12px;
+}
+
+.review-form-box textarea,
+.review-form-box input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.review-form-box textarea:focus,
+.review-form-box input:focus {
+    border-color: #2563eb;
+}
+
+.review-form-box input[readonly] {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+.btn-submit-review {
+    width: 100%;
+    background: #ff5722;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-submit-review:hover {
+    background: #e64a19;
+}
+
+/* ==========================================
+   STYLE DANH SÁCH BÌNH LUẬN (ONEWAY MOBILE STYLE)
+   ========================================== */
+.reviews-list-container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-item-card {
+    background: #ffffff;
+    border-bottom: 1px solid #f0f0f4;
+    padding-bottom: 20px;
+    text-align: left;
+}
+
+.review-author-name {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 6px 0;
+}
+
+.review-stars-row {
+    color: #ff8d28;
+    font-size: 13px;
+    display: flex;
+    gap: 3px;
+    margin-bottom: 8px;
+}
+
+.review-content-text {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14.5px;
+    color: #374151;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #888888;
+}
+
+.btn-reply-link {
+    background: none;
+    border: none;
+    color: #2563eb; /* Màu xanh nước biển cho chữ Trả lời */
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-reply-link:hover {
+    text-decoration: underline;
+}
+
+.comment-meta .dot {
+    color: #aaa;
+}
+
+.comment-date {
+    color: #888888;
+}
+
+/* THẺ PHẢN HỒI CỦA ADMIN */
+.admin-reply-card {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    margin-left: 20px; /* Thụt lùi vào trong thể hiện câu trả lời */
+}
+
+.admin-badge {
+    display: inline-block;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.admin-comment-text {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+    word-break: break-word;
+}
+
+.no-reviews-msg {
+    text-align: center;
+    padding: 30px;
+    background: #f9fafb;
+    border-radius: 12px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+/* CỘT PHẢI: TÙY CHỌN MUA HÀNG */
+.action-meta-links {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;         
+    border: none;             
+    padding: 0;
+    cursor: pointer;
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 14.5px;
+    color: #55555f;           
+    transition: all 0.2s ease;
+}
+.action-btn i {
+    font-weight: 1px;
+    border: #55555f;
+}
+
+/* Hiệu ứng khi rê chuột qua nút (Hover) */
+.action-btn:hover {
+    color: #111111; 
+}
+.action-btn:hover .material-symbols-outlined {
+    color: #111111;
+}
+
+/* TRẠNG THÁI KHI ĐÃ YÊU THÍCH */
+.action-btn.is-favorite {
+    color: #e03e3e; 
+}
+
+.action-btn.is-favorite i {
+    color: #e03e3e;   
+    font-variation-settings: 'FILL' 1; 
+}
+
+.option-section { margin-bottom: 25px; }
+.option-title { 
+    font-family: "Nunito Sans", sans-serif; 
+    font-size: 18px; 
+    font-weight: 800; 
+    margin-bottom: 10px; 
+}
+
+.reviews-section-title {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 16px;
+}
+
+/* CONTAINER CHỨA CÁC Ô CHỌN */
+.options-grid { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+}
+
+/* Ô CHỌN CẤU HÌNH/MÀU SẮC */
+.option-card {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;      
+    padding: 14px 16px;       
+    min-width: 120px;         
+    min-height: 80px;         
+    cursor: pointer;
+    position: relative;
+    background: #fff;
+    font-family: "Nunito Sans", sans-serif;
+    box-sizing: border-box; /* Cố định padding không làm phình kích thước ô */
+    text-align: left;
+    
+    display: flex;
+    flex-direction: column;   
+    justify-content: flex-end;
+    align-items: flex-start;  
+    text-align: left;         
+    transition: all 0.2s ease-in-out;
+}
+
+.option-card-content {
+    display: flex;
+    flex-direction: column; /* Buộc tên ở trên và giá ở dưới */
+    align-items: flex-start; /* Sát lề trái */
+    gap: 0px; /* Khoảng cách nhỏ giữa 2 dòng */
+    width: 100%;
+}
+
+/* CHỮ PHIÊN BẢN (Ví dụ: 512GB) */
+.option-card .opt-name { 
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 800; 
+    font-size: 16px;          
+    color: #1e293b;
+    margin: 0 0 2px 0;        
+    transition: color 0.2s;
+}
+
+/* GIÁ TIỀN PHÍA DƯỚI */
+.option-card .opt-price { 
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 13px;          
+    color: #64748b;           
+    margin: 0; 
+}
+
+/* TRẠNG THÁI KHI ĐƯỢC CHỌN (ACTIVE) */
+.option-card.active {
+    border-color: #ff8d28;
+    background: #ffffff;      
+}
+
+/* Đổi chữ dung lượng sang màu cam khi được chọn */
+.option-card.active .opt-name {
+    color: #ff8d28;
+}
+
+/* CẤU HÌNH BADGE CHỨA ICON CHECK TRÒN CAM (FA-CHECK) */
+.option-card .active-icon-badge {
+    display: none; /* Mặc định ẩn đi */
+    position: absolute;
+    top: 8px;                 
+    right: 8px;
+    background: none; 
+    color: white;
+    width: 18px;              
+    height: 18px;
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 10px;
+    pointer-events: none; /* Click xuyên qua không bị lỗi kẹt click */
+}
+
+/* Chỉ hiển thị badge tròn cam khi thẻ option-card có class active */
+.option-card.active .active-icon-badge {
+    background: #ff8d28; 
+    display: flex;
+}
+
+/* Vùng hiển thị giá lớn */
+.big-price-display {
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 38px;
+    font-weight: 880;
+    color: #ff8d28;
+    margin: 30px 0;
+}
+
+/* Cụm nút bấm mua hàng */
+.purchase-buttons-group {
+    display: grid;
+    grid-template-columns: 1.51fr 0.99fr;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+.btn-buy-now {
+    background: linear-gradient(to right, #ff5300, #FF8D28); 
+    color: white; 
+    border: none; 
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 20px; 
+    font-weight: 700; 
+    border-radius: 8px; 
+    cursor: pointer;
+}
+.btn-add-cart {
+    background: #fff; 
+    color: #ff8d28; 
+    border: 1px solid #ff8d28; 
+    font-family: "Nunito Sans", sans-serif;
+    font-size: 18px; 
+    font-weight: 650; 
+    padding: 14px; 
+    border-radius: 8px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 6px; 
+    cursor: pointer;
+}
+/* BADGE TRẠNG THÁI CÒN HÀNG / HẾT HÀNG */
+.prod-meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.btn-buy-now .btn-main-text {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.btn-buy-now .btn-sub-text {
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 0px;
+    opacity: 0.9;
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.stock-badge.in-stock {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.stock-badge.out-stock {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* KHÓA NÚT MUA KHI HẾT HÀNG */
+.btn-buy-now.disabled {
+    background: #ff8d28; /* Đổi nút sang màu xám */
+    color: #ffffff;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* BẢNG THÔNG SỐ KỸ THUẬT SO LE */
+.specifications-table-box {
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.spec-header {
+    display: flex; 
+    justify-content: space-between; 
+    padding: 15px; 
+    background: #fff; 
+    font-weight: 650; 
+    border-bottom: 1px solid #e5e5ea;
+}
+.spec-header span, .spec-header a { font-family: "Nunito Sans", sans-serif; }
+.view-detail-specs { 
+    color: #ff8d28; 
+    text-decoration: none; 
+    font-size: 18px; 
+}
+.spec-row {
+    display: grid;
+    grid-template-columns: 1fr 1.56fr;
+    padding: 12px 15px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+/* Tạo hiệu ứng sọc màu so le */
+.spec-row:nth-child(even) { background-color: #fff8f3; }
+.spec-row:nth-child(odd) { background-color: #ffffff; }
+.spec-label { color: #555; font-family: "Nunito Sans", sans-serif; font-weight: 500; }
+.spec-val { color: #111; font-family: "Nunito Sans", sans-serif; font-weight: 530; white-space: pre-line; }
+
+#short-desc {
+    white-space: pre-line;
+    word-break: break-word;
+    color: #444;
+    font-size: 14px;
+    line-height: 1.6;
+}

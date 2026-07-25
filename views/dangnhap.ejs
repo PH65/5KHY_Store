@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - 5KHY</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/auth.css?v=2">
+    <link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body class="auth-body">
+
+    <%- include('partials/header', { active: '' }) %>
+
+    <main class="auth-main">
+        <section class="auth-card" aria-labelledby="auth-title">
+
+            <h1 class="auth-title" id="auth-title">ĐĂNG NHẬP</h1>
+            <p class="auth-switch">Bạn chưa có tài khoản? <a href="/dangky.html">Đăng ký</a></p>
+
+            <form class="auth-form" novalidate>
+                <div class="form-field">
+                    <label for="login-id">Tên đăng nhập</label>
+                    <input type="text" id="login-id" name="login-id" placeholder="Nhập số điện thoại hoặc email" required>
+                </div>
+
+                <!-- MẬT KHẨU CÓ ICON MẮT -->
+                <div class="form-field">
+                    <label for="login-password">Mật khẩu</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="login-password" name="login-password" placeholder="Nhập mật khẩu" required>
+                        <button type="button" class="toggle-password-btn" onclick="togglePassword('login-password', this)" aria-label="Hiện mật khẩu">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit-btn">Đăng nhập</button>
+
+                <p class="auth-help"><a href="#">Quên mật khẩu?</a></p>
+
+                <div class="auth-divider" role="separator"><span>HOẶC</span></div>
+
+                <div class="social-login-group">
+                    <button type="button" class="social-btn social-facebook">
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        Đăng nhập bằng Facebook
+                    </button>
+                    <button type="button" class="social-btn social-google">
+                        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M23.52 12.273c0-.851-.076-1.67-.218-2.455H12v4.645h6.458a5.52 5.52 0 0 1-2.395 3.622v3.01h3.878c2.269-2.09 3.579-5.166 3.579-8.822z"/><path fill="#34A853" d="M12 24c3.24 0 5.956-1.075 7.941-2.905l-3.878-3.01c-1.075.72-2.45 1.146-4.063 1.146-3.127 0-5.774-2.112-6.72-4.95H1.276v3.108C3.25 21.31 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.281A7.19 7.19 0 0 1 4.909 12c0-.791.136-1.56.371-2.281V6.611H1.276A11.996 11.996 0 0 0 0 12c0 1.936.464 3.769 1.276 5.389l4.004-3.108z"/><path fill="#EA4335" d="M12 4.769c1.762 0 3.344.606 4.588 1.795l3.442-3.442C17.951 1.19 15.235 0 12 0 7.31 0 3.25 2.69 1.276 6.611l4.004 3.108C6.226 6.881 8.873 4.769 12 4.769z"/></svg>
+                        Đăng nhập bằng Google
+                    </button>
+                    <button type="button" class="social-btn social-apple">
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#000000" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17.02 2.94 12.7 4.7 9.79c.87-1.44 2.43-2.35 4.12-2.38 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.27-2.15 3.79.03 3.01 2.65 4.01 2.68 4.02-.02.07-.42 1.44-1.38 2.84zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        Đăng nhập bằng Apple
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // HÀM CHUYỂN ĐỔI ẨN/HIỆN MẬT KHẨU
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye';
+                btn.setAttribute('aria-label', 'Ẩn mật khẩu');
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye-slash';
+                btn.setAttribute('aria-label', 'Hiện mật khẩu');
+            }
+        }
+
+        document.querySelector('.auth-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                return;
+            }
+
+            const submitBtn = this.querySelector('.auth-submit-btn');
+            submitBtn.disabled = true;
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: document.getElementById('login-id').value.trim(),
+                    password: document.getElementById('login-password').value
+                })
+            })
+            .then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Đăng nhập thất bại.');
+                
+                // --- PHÂN HƯỚNG TỰ ĐỘNG THEO QUYỀN ---
+                if (data.role === 'admin') {
+                    alert('Chào mừng Quản trị viên trở lại! 👑');
+                    window.location.href = '/admin'; // Nhảy sang Admin Dashboard
+                } else {
+                    window.location.href = '/index.html'; // Tài khoản thường về Trang chủ
+                }
+            })
+            .catch((err) => {
+                alert(err.message);
+                submitBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

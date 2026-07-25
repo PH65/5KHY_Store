@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Trị Admin - 5KHY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- SIDEBAR MẸO CHUYỂN TAB -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <h2>5KHY ADMIN</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <button class="menu-item active" onclick="switchTab('dashboard', this)">
+                <i class="fa-solid fa-chart-pie"></i> Tổng quan
+            </button>
+            <button class="menu-item" onclick="switchTab('orders', this)">
+                <i class="fa-solid fa-cart-shopping"></i> Đơn hàng
+            </button>
+            <button class="menu-item" onclick="switchTab('products', this)">
+                <i class="fa-solid fa-boxes-stacked"></i> Kho & Sản phẩm
+            </button>
+            <a href="/" class="menu-item logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Về trang chủ
+            </a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT CHÍNH -->
+    <main class="admin-content">
+        <!-- TAB 1: THỐNG KÊ TỔNG QUAN -->
+        <section class="tab-pane active" id="tab-dashboard">
+            <h1 class="page-title">Báo cáo tổng quan</h1>
+            <div class="stats-cards-grid">
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Tổng doanh thu</span>
+                        <h3 id="stat-revenue">0đ</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Tổng đơn hàng</span>
+                        <h3 id="stat-orders">0</h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="stat-info">
+                        <span class="label">Sản phẩm trong hệ thống</span>
+                        <h3 id="stat-products">0</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: QUẢN LÝ ĐƠN HÀNG -->
+        <section class="tab-pane" id="tab-orders">
+            <h1 class="page-title">Quản lý Đơn hàng</h1>
+            <div class="table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-tbody">
+                        <tr><td colspan="6" style="text-align: center;">Đang tải danh sách đơn hàng...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: QUẢN LÝ KHO & SẢN PHẨM -->
+        <section class="tab-pane" id="tab-products">
+            <h1 class="page-title">Quản lý Tồn kho & Giá</h1>
+            <div class="table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Thương hiệu</th>
+                            <th>Số phiên bản</th>
+                            <th>Trạng thái kho</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-tbody">
+                        <tr><td colspan="6" style="text-align: center;">Đang tải danh sách sản phẩm...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Chuyển đổi qua lại giữa các Tab
+        function switchTab(tabName, btn) {
+            document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'orders') loadAdminOrders();
+            if (tabName === 'products') loadAdminProducts();
+            if (tabName === 'dashboard') loadDashboardStats();
+        }
+
+        function formatPrice(p) {
+            return (typeof p === 'number') ? p.toLocaleString('vi-VN') + 'đ' : p;
+        }
+
+        // Tải dữ liệu báo cáo
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                document.getElementById('stat-revenue').innerText = formatPrice(data.totalRevenue || 0);
+                document.getElementById('stat-orders').innerText = data.totalOrders || 0;
+                document.getElementById('stat-products').innerText = data.totalProducts || 0;
+            } catch (err) { console.error(err); }
+        }
+
+        // Tải danh sách đơn hàng
+        async function loadAdminOrders() {
+            try {
+                const res = await fetch('/api/admin/orders');
+                const orders = await res.json();
+                const tbody = document.getElementById('admin-orders-tbody');
+
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chưa có đơn hàng nào.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td><strong>${o.orderCode}</strong></td>
+                        <td>${o.shipping ? o.shipping.fullname : 'Khách lẻ'}<br><small>${o.shipping ? o.shipping.phone : ''}</small></td>
+                        <td>${o.orderDate || new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td><strong style="color: #ff8d28;">${formatPrice(o.totalAmount)}</strong></td>
+                        <td><span class="status-badge ${o.status}">${o.status}</span></td>
+                        <td>
+                            <select onchange="updateOrderStatus('${o._id}', this.value)" style="padding: 4px 8px; border-radius: 6px;">
+                                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Chờ xử lý</option>
+                                <option value="paid" ${o.status === 'paid' ? 'selected' : ''}>Đã thanh toán</option>
+                                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Hủy đơn</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // Cập nhật trạng thái đơn hàng
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // Tải lại bảng đơn hàng để giao diện cập nhật nhãn paid/cancelled ngay lập tức!
+                    loadAdminOrders();
+                } else {
+                    alert(data.error || 'Cập nhật trạng thái thất bại!');
+                }
+            } catch (err) {
+                console.error('Lỗi khi cập nhật trạng thái đơn:', err);
+                alert('Lỗi hệ thống khi cập nhật trạng thái!');
+            }
+        }
+
+        let currentEditingProduct = null;
+
+        // 1. CẬP NHẬT LẠI BẢNG DANH SÁCH SẢN PHẨM CÓ NÚT SỬA ĐÚNG ID
+        async function loadAdminProducts() {
+            try {
+                const res = await fetch('/api/admin/products');
+                const prods = await res.json();
+                const tbody = document.getElementById('admin-products-tbody');
+
+                if (!prods || prods.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chưa có sản phẩm nào.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = prods.map(p => `
+                    <tr>
+                        <td><img src="/${p.img}" alt="${p.name}" style="width: 45px; height: 45px; object-fit: contain;"></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.brand || 'Khác'}</td>
+                        <td>${p.variants ? p.variants.length : 0} phiên bản</td>
+                        <td><span class="status-badge in-stock">Đang kinh doanh</span></td>
+                        <td>
+                            <button onclick="openEditModal('${p._id}')" class="btn-edit">
+                                <i class="fa-solid fa-pen-to-square"></i> Sửa
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // 2. MỞ MODAL VÀ LẤY DỮ LIỆU TỪ MONGODB ĐIỀN VÀO FORM
+        async function openEditModal(prodId) {
+            try {
+                const res = await fetch(`/api/admin/products/${prodId}`);
+                const prod = await res.json();
+                if (!prod || prod.error) return alert('Không thể lấy dữ liệu sản phẩm!');
+
+                currentEditingProduct = prod;
+                document.getElementById('edit-prod-id').value = prod._id;
+                document.getElementById('edit-prod-name').value = prod.name || '';
+                document.getElementById('edit-prod-brand').value = prod.brand || '';
+                document.getElementById('edit-prod-desc').value = prod.desc || '';
+
+                // Render các phiên bản Dung lượng, Giá & Số lượng tồn kho (Stock)
+                const variantsContainer = document.getElementById('variants-edit-container');
+                if (prod.variants && prod.variants.length > 0) {
+                    variantsContainer.innerHTML = prod.variants.map((v, vIdx) => `
+                        <div class="variant-edit-card" style="border: 1px solid #e2e8f0; padding: 12px; margin-bottom: 10px; border-radius: 8px;">
+                            <div style="font-weight: bold; margin-bottom: 8px; color: #ff8d28;">Phiên bản: ${v.storage}</div>
+                            <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 12px;">Giá tiền (VNĐ):</label>
+                                    <input type="number" class="form-control var-price" data-vidx="${vIdx}" value="${v.price || 0}">
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; font-weight: bold;">Tồn kho từng màu sắc:</label>
+                                ${(v.colors || []).map((c, cIdx) => `
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                                        <span style="width: 80px; font-size: 13px;">${c.name}:</span>
+                                        <input type="number" class="form-control color-stock" data-vidx="${vIdx}" data-cidx="${cIdx}" value="${c.stock !== undefined ? c.stock : 10}" placeholder="Số lượng tồn">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    variantsContainer.innerHTML = '<p style="color: #666;">Sản phẩm này không có nhiều biến thể.</p>';
+                }
+
+                document.getElementById('edit-product-modal').style.display = 'flex';
+            } catch (err) {
+                alert('Lỗi khi lấy thông tin sản phẩm!');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-product-modal').style.display = 'none';
+        }
+
+        // 3. GỬI DỮ LIỆU ĐÃ SỬA LÊN BACKEND ĐỂ CẬP NHẬT TRỰC TIẾP VÀO MONGODB
+        async function saveProductChanges(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('edit-prod-id').value;
+
+            // Cập nhật lại mảng variants từ các ô input
+            const updatedVariants = JSON.parse(JSON.stringify(currentEditingProduct.variants || []));
+
+            // Cập nhật giá
+            document.querySelectorAll('.var-price').forEach(input => {
+                const vIdx = input.getAttribute('data-vidx');
+                if (updatedVariants[vIdx]) {
+                    updatedVariants[vIdx].price = Number(input.value);
+                }
+            });
+
+            // Cập nhật số lượng tồn kho (stock)
+            document.querySelectorAll('.color-stock').forEach(input => {
+                const vIdx = input.getAttribute('data-vidx');
+                const cIdx = input.getAttribute('data-cidx');
+                if (updatedVariants[vIdx] && updatedVariants[vIdx].colors && updatedVariants[vIdx].colors[cIdx]) {
+                    updatedVariants[vIdx].colors[cIdx].stock = Number(input.value);
+                }
+            });
+
+            const updatePayload = {
+                name: document.getElementById('edit-prod-name').value.trim(),
+                brand: document.getElementById('edit-prod-brand').value.trim(),
+                desc: document.getElementById('edit-prod-desc').value.trim(),
+                variants: updatedVariants
+            };
+
+            try {
+                const res = await fetch(`/api/admin/products/${prodId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatePayload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Cập nhật thất bại!');
+
+                alert('🎉 Đã lưu thay đổi vào MongoDB thành công!');
+                closeEditModal();
+                loadAdminProducts(); // Tải lại bảng danh sách
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // Tải stats lần đầu
+        loadDashboardStats();
+    </script>
+
+    <!-- MODAL POPUP CHỈNH SỬA SẢN PHẨM -->
+    <div class="modal-overlay" id="edit-product-modal" style="display: none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Chỉnh sửa Sản phẩm (MongoDB)</h2>
+                <button type="button" class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            
+            <form id="edit-product-form" onsubmit="saveProductChanges(event)">
+                <input type="hidden" id="edit-prod-id">
+
+                <div class="form-group">
+                    <label for="edit-prod-name">Tên sản phẩm:</label>
+                    <input type="text" id="edit-prod-name" required class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="edit-prod-brand">Thương hiệu:</label>
+                        <input type="text" id="edit-prod-brand" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-prod-desc">Mô tả sản phẩm:</label>
+                    <textarea id="edit-prod-desc" rows="4" class="form-control" placeholder="Nhập bài viết mô tả chi tiết..."></textarea>
+                </div>
+
+                <!-- KHU VỰC SỬA GIÁ & TỒN KHO CHO TỪNG PHIÊN BẢN/MÀU SẮC -->
+                <div class="form-group">
+                    <label>Các phiên bản, Giá & Tồn kho (Stock):</label>
+                    <div id="variants-edit-container" class="variants-container">
+                        <!-- JavaScript sẽ tự động vẽ danh sách các ô nhập giá và số lượng tồn kho vào đây -->
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Hủy bỏ</button>
+                    <button type="submit" class="btn-save">Lưu vào MongoDB</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

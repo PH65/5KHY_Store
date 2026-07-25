@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xây dựng cấu hình PC - 5KHY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/xaydungcauhinh.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <%- include('partials/header', { active: 'xaydungcauhinh' }) %>
+
+<main class="builder-container">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">Xây dựng cấu hình PC</li>
+            </ol>
+        </nav>
+
+        <h1 class="builder-title">XÂY DỰNG CẤU HÌNH PC</h1>
+
+        <div class="builder-toolbar">
+            <div class="config-tabs" role="tablist" aria-label="Danh sách cấu hình">
+                <button type="button" class="config-tab active" role="tab" aria-selected="true" data-config="1">Cấu hình 1</button>
+                <button type="button" class="config-tab" role="tab" aria-selected="false" data-config="2">Cấu hình 2</button>
+                <button type="button" class="config-tab" role="tab" aria-selected="false" data-config="3">Cấu hình 3</button>
+                <button type="button" class="config-tab" role="tab" aria-selected="false" data-config="4">Cấu hình 4</button>
+                <button type="button" class="config-tab" role="tab" aria-selected="false" data-config="5">Cấu hình 5</button>
+            </div>
+            <button type="button" class="reset-config-btn" id="reset-config-btn">
+                <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span> Làm mới
+            </button>
+        </div>
+
+        <ul class="component-list" id="component-list">
+            </ul>
+
+        <div class="builder-bottom">
+            <section class="order-summary-card" aria-labelledby="summary-title">
+                <h2 id="summary-title">Tóm tắt đơn hàng</h2>
+                <div class="summary-line">
+                    <span>Chi phí dự tính</span>
+                    <strong id="build-total-price">0đ</strong>
+                </div>
+                <button type="button" class="place-order-btn" id="place-order-btn">Đặt hàng ngay</button>
+            </section>
+
+            <div class="builder-actions">
+                <button type="button" class="builder-action-btn" id="save-config-btn">
+                    <span class="material-symbols-outlined" aria-hidden="true">bookmark</span> Lưu cấu hình
+                </button>
+                <button type="button" class="builder-action-btn" id="download-image-btn">
+                    <span class="material-symbols-outlined" aria-hidden="true">image</span> Tải ảnh cấu hình
+                </button>
+                <button type="button" class="builder-action-btn share-btn" id="share-config-btn">
+                    <span class="material-symbols-outlined" aria-hidden="true">share</span> Chia sẻ cấu hình
+                </button>
+                <button type="button" class="builder-action-btn" id="print-config-btn">
+                    <span class="material-symbols-outlined" aria-hidden="true">print</span> Xem và in
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <%- include('partials/footer') %>
+    <script src="/js/cart.js"></script>
+<script>
+        // Danh sách linh kiện mặc định cho "Cấu hình 1" (dữ liệu mẫu)
+        const defaultConfig = [
+            { key: "cpu", label: "Bộ vi xử lý (CPU)", name: "CPU AMD Ryzen 9 9950X3D (4.3GHz Upto 5.6GHz/ 208MB/16 cores 32 threads/Socket AM5)", price: 25990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "mainboard", label: "Bo mạch chủ (Mainboard)", name: "Mainboard Asus ROG CROSSHAIR X870E EXTREME", price: 26590000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "ram", label: "RAM", name: "RAM G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6400MHz (Black)", price: 12990000, qty: 2, img: "/Hình ảnh/PC" },
+            { key: "hdd", label: "HDD", name: "", price: 0, qty: 0, img: "" },
+            { key: "ssd", label: "SSD", name: "Ổ cứng SSD Samsung 9100 PRO 4TB NVMe PCIe 5.0 x4 (M.2 2280)", price: 22990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "vga", label: "Card đồ hoạ (VGA)", name: "VGA MSI GeForce RTX 5090 LIGHTNING Z 32GB GDDR7", price: 169990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "psu", label: "Nguồn", name: "Nguồn Máy Tính ASUS ROG THOR 1200 P2 1200W PLATINUM II (PCIe Gen 5.0)", price: 8990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "case", label: "Vỏ case", name: "Vỏ Case MSI MEG MAESTRO 700L P2", price: 11990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "air-cooler", label: "Tản nhiệt khí", name: "", price: 0, qty: 0, img: "" },
+            { key: "liquid-cooler", label: "Tản nhiệt nước All In One", name: "Tản nhiệt nước ASUS ROG RYUO IV SLC 360 ARGB", price: 9990000, qty: 1, img: "/Hình ảnh/PC" },
+            { key: "monitor", label: "Màn hình", name: "", price: 0, qty: 0, img: "" },
+            { key: "keyboard", label: "Bàn phím", name: "", price: 0, qty: 0, img: "" },
+            { key: "mouse", label: "Chuột", name: "", price: 0, qty: 0, img: "" },
+            { key: "headset", label: "Tai Nghe", name: "", price: 0, qty: 0, img: "" },
+            { key: "software", label: "Phần mềm", name: "", price: 0, qty: 0, img: "" }
+        ];
+
+        const emptyConfig = defaultConfig.map(c => ({ ...c, name: "", price: 0, qty: 0, img: "" }));
+
+        const savedConfigs = localStorage.getItem('pc_builder_configs');
+        const configs = savedConfigs ? JSON.parse(savedConfigs) : {
+            1: JSON.parse(JSON.stringify(emptyConfig)),
+            2: JSON.parse(JSON.stringify(emptyConfig)),
+            3: JSON.parse(JSON.stringify(emptyConfig)),
+            4: JSON.parse(JSON.stringify(emptyConfig)),
+            5: JSON.parse(JSON.stringify(emptyConfig))
+        };
+
+        let currentConfigId = 1;
+
+        function formatVND(num) {
+            return num.toLocaleString('vi-VN') + 'đ';
+        }
+
+        function renderComponentList() {
+            const list = document.getElementById('component-list');
+            const items = configs[currentConfigId];
+
+            list.innerHTML = items.map((item, idx) => {
+                /* HƯNG SỬA LẠI ĐOẠN RENDER KHI ĐÃ CHỌN (item.qty > 0) THÀNH ĐOẠN NÀY: */
+                if (item.qty > 0) {
+                    return `
+                        <li class="component-row filled" data-idx="${idx}">
+                            <span class="component-label">${item.label}</span>
+                            <div class="component-item">
+                                <button type="button" class="edit-part-btn" aria-label="Sửa linh kiện" style="background: none; border: none; color: #ff8d28; cursor: pointer; display: flex; align-items: center; padding: 0 4px; flex-shrink: 0;">
+                                    <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                </button>
+                                
+                                <img src="${item.img}" alt="" onerror="this.style.visibility='hidden'">
+                                <span class="component-name">${item.name}</span>
+                            </div>
+                            <span class="component-unit-price">${formatVND(item.price)}</span>
+                            <div class="component-qty-control">
+                                <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng">-</button>
+                                <span class="qty-value">${item.qty}</span>
+                                <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng">+</button>
+                            </div>
+                            <span class="component-total-price">${formatVND(item.price * item.qty)}</span>
+                            <button type="button" class="component-delete-btn" aria-label="Xoá linh kiện">
+                                <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+                            </button>
+                        </li>
+                    `;
+                }
+                return `
+                    <li class="component-row empty" data-idx="${idx}">
+                        <span class="component-label">${item.label}</span>
+                        <button type="button" class="choose-part-btn">
+                            <span class="material-symbols-outlined" aria-hidden="true">add</span> Chọn ${item.label.split(' (')[0].toLowerCase()}
+                        </button>
+                    </li>
+                `;
+            }).join('');
+
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const total = configs[currentConfigId].reduce((sum, i) => sum + i.price * i.qty, 0);
+            document.getElementById('build-total-price').textContent = formatVND(total);
+        }
+
+        // HƯNG CẬP NHẬT LẠI ĐOẠN XỬ LÝ SỰ KIỆN CLICK NÀY NHÉ:
+        document.getElementById('component-list').addEventListener('click', function (e) {
+            const row = e.target.closest('.component-row');
+            if (!row) return;
+            const idx = Number(row.dataset.idx);
+            const item = configs[currentConfigId][idx];
+
+            // 1. NÚT CÂY BÚT SỬA LINH KIỆN (MỚI THÊM)
+            if (e.target.closest('.edit-part-btn')) {
+                openPartModal(idx, item.key, item.label);
+            } 
+            // 2. NÚT CHỌN LINH KIỆN MỚI (KHI TRỐNG)
+            else if (e.target.closest('.choose-part-btn')) {
+                openPartModal(idx, item.key, item.label);
+            } 
+            // 3. TĂNG SỐ LƯỢNG
+            else if (e.target.closest('.qty-plus')) {
+                item.qty++;
+                renderComponentList();
+            } 
+            // 4. GIẢM SỐ LƯỢNG
+            else if (e.target.closest('.qty-minus')) {
+                if (item.qty > 1) item.qty--;
+                renderComponentList();
+            } 
+            // 5. XOÁ LINH KIỆN
+            else if (e.target.closest('.component-delete-btn')) {
+                // Reset lại toàn bộ thông tin linh kiện ở dòng này về trạng thái trống
+                item.qty = 0; 
+                item.price = 0; 
+                item.name = ""; 
+                item.img = "";
+                item.socket = "";
+                item.ram_type = "";
+                item.form_factor = "";
+                item.supported_form_factors = [];
+                item.wattage = 0;
+                item.recommended_psu = 0;
+
+                // Vẽ lại giao diện (chuyển dòng này thành nút "+ Chọn...")
+                renderComponentList();
+
+                // BẮT BUỘC: Ghi đè trạng thái trống này vào localStorage ngay lập tức
+                saveConfigsToStorage(); 
+            }
+        });
+
+        document.querySelectorAll('.config-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.config-tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                currentConfigId = this.dataset.config;
+                renderComponentList();
+            });
+        });
+
+        document.getElementById('reset-config-btn').addEventListener('click', function () {
+            if (confirm('Bạn có chắc muốn làm mới cấu hình hiện tại? Toàn bộ linh kiện đã chọn sẽ bị xoá.')) {
+                configs[currentConfigId] = JSON.parse(JSON.stringify(emptyConfig));
+                renderComponentList();
+                saveConfigsToStorage(); // <-- BỔ SUNG DÒNG NÀY 
+            }
+        });
+
+        document.getElementById('place-order-btn').addEventListener('click', async function () {
+            const selectedParts = configs[currentConfigId].filter(i => i.qty > 0 && i.name);
+
+            if (selectedParts.length === 0) {
+                alert('Vui lòng chọn ít nhất một linh kiện trước khi đặt hàng.');
+                return;
+            }
+
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Đang thêm vào giỏ hàng...';
+
+            try {
+                for (const part of selectedParts) {
+                    await Cart.addItem({
+                        productId: part._id || ('pc-part-' + part.key),
+                        productType: 'pc-part',
+                        name: part.name,
+                        img: part.img,
+                        price: part.price,
+                        variant: part.label || '',
+                        color: '',
+                        qty: part.qty
+                    });
+                }
+                window.location.href = '/giohang.html';
+            } catch (err) {
+                console.error('Lỗi khi thêm cấu hình vào giỏ hàng:', err);
+                alert('Có lỗi xảy ra, không thêm được cấu hình vào giỏ hàng. Vui lòng thử lại!');
+                btn.disabled = false;
+                btn.textContent = 'Đặt hàng ngay';
+            }
+        });
+
+
+        // 2. Mẹo thêm: Click ra vùng tối bên ngoài hộp thoại cũng tự tắt
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('part-modal');
+            if (e.target === modal) {
+                closePartModal();
+            }
+        });
+
+        document.getElementById('save-config-btn').addEventListener('click', () => alert('Đã lưu cấu hình (chức năng sẽ kết nối backend sau).'));
+        
+        document.getElementById('download-image-btn').addEventListener('click', function () {
+            const selectedParts = configs[currentConfigId].filter(i => i.qty > 0 && i.name);
+
+            if (selectedParts.length === 0) {
+                alert('Vui lòng chọn ít nhất một linh kiện trước khi tải ảnh cấu hình.');
+                return;
+            }
+
+            // 1. Cập nhật Ngày xuất báo giá
+            const today = new Date();
+            const dateStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+            const quoteDateEl = document.getElementById('quote-export-date');
+            if (quoteDateEl) quoteDateEl.textContent = `Ngày lập: ${dateStr}`;
+
+            // 2. Đổ dữ liệu vào Bảng Table (#quotation-items-table-body)
+            const tableBody = document.getElementById('quotation-items-table-body');
+            let totalMoney = 0;
+
+            tableBody.innerHTML = selectedParts.map((part, index) => {
+                const itemTotal = part.price * part.qty;
+                totalMoney += itemTotal;
+
+                return `
+                    <tr>
+                        <td style="text-align: center; font-weight: 700; color: #64748b;">${index + 1}</td>
+                        <td style="text-align: center;">
+                            <img src="${part.img}" class="quote-prod-img" alt="${part.name}" crossOrigin="anonymous" onerror="this.src='https://via.placeholder.com/50'">
+                        </td>
+                        <td>
+                            <div class="quote-prod-name">${part.name}</div>
+                            <div class="quote-prod-meta">
+                                <span>Mã SP: ${(part.key || 'SP').toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}</span>
+                                <span class="quote-prod-warranty">• BH: 36 Tháng</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 600; color: #334155;">${formatVND(part.price)}</td>
+                        <td style="text-align: center; font-weight: 800; color: #0f172a;">${part.qty}</td>
+                        <td style="text-align: right; font-weight: 800; color: #ea580c;">${formatVND(itemTotal)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Cập nhật tổng tiền vào các thẻ ID mới
+            const subtotalEl = document.getElementById('quote-subtotal-val');
+            const totalEl = document.getElementById('quote-total-val');
+            if (subtotalEl) subtotalEl.textContent = formatVND(totalMoney);
+            if (totalEl) totalEl.textContent = formatVND(totalMoney);
+
+            // 3. Tiến hành chụp ảnh
+            const exportContainer = document.getElementById('quotation-export-container');
+            document.body.style.cursor = 'wait';
+
+            setTimeout(() => {
+                html2canvas(exportContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: "#ffffff"
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Bao-Gia-PC-5KHY-${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    document.body.style.cursor = 'default';
+                }).catch(err => {
+                    console.error("Lỗi html2canvas:", err);
+                    alert("Có lỗi xảy ra khi xuất ảnh.");
+                    document.body.style.cursor = 'default';
+                });
+            }, 400);
+        });
+
+        // XỬ LÝ NÚT CHIA SẺ CẤU HÌNH (TỰ ĐỘNG COPY LINK TRANG WEB)
+        // 2. NÚT CHIA SẺ CẤU HÌNH (DÙNG CUSTOM POPUP)
+        document.getElementById('share-config-btn').addEventListener('click', function () {
+            const currentUrl = window.location.href;
+
+            navigator.clipboard.writeText(currentUrl)
+                .then(() => {
+                    // Thay alert bằng Toast xịn mịn
+                    showToast('Đã sao chép liên kết cấu hình vào bộ nhớ tạm!', 'success');
+                })
+                .catch(err => {
+                    console.error('Lỗi sao chép:', err);
+                    
+                    // Fallback copy
+                    const dummyInput = document.createElement('input');
+                    document.body.appendChild(dummyInput);
+                    dummyInput.value = currentUrl;
+                    dummyInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummyInput);
+                    
+                    showToast('Đã sao chép liên kết cấu hình!', 'success');
+                });
+        });
+
+        document.getElementById('print-config-btn').addEventListener('click', function () {
+            const selectedParts = configs[currentConfigId].filter(i => i.qty > 0 && i.name);
+
+            if (selectedParts.length === 0) {
+                alert('Vui lòng chọn ít nhất một linh kiện trước khi xem báo giá.');
+                return;
+            }
+
+            localStorage.setItem('active_print_config', currentConfigId);
+            window.open('baogia-in.html', '_blank');
+        });
+
+        renderComponentList();
+
+        // Thêm biến để lưu trữ linh kiện đang chọn tạm thời
+        let activeRowIndex = null;
+
+        // Thêm dữ liệu kho linh kiện mẫu để hiển thị trong Modal (Sau này sẽ fetch từ MongoDB của bạn)
+        const pcPartsDatabase = [
+            { key: "cpu", brand: "AMD", name: "CPU AMD Ryzen 9 9950X3D (4.3GHz/16 cores 32 threads)", price: 25990000, img: "/Hình ảnh/PC" },
+            { key: "cpu", brand: "Intel", name: "CPU Intel Core Ultra 9 285K (Upto 5.7GHz/24 cores)", price: 16490000, img: "/Hình ảnh/PC" },
+            { key: "mainboard", brand: "ASUS", name: "Mainboard Asus ROG CROSSHAIR X870E EXTREME", price: 26590000, img: "/Hình ảnh/PC" },
+            { key: "ram", brand: "Corsair", name: "RAM Corsair Dominator Titanium 32GB DDR5 6000MHz", price: 6590000, img: "/Hình ảnh/PC" },
+            { key: "ssd", brand: "Samsung", name: "Ổ cứng SSD Samsung 990 PRO 2TB NVMe PCIe 4.0", price: 5490000, img: "/Hình ảnh/PC" },
+            { key: "vga", brand: "MSI", name: "VGA MSI GeForce RTX 5090 LIGHTNING Z 32GB GDDR7", price: 169990000, img: "/Hình ảnh/PC" },
+            { key: "psu", brand: "ASUS", name: "Nguồn ASUS ROG THOR 1200 P2 1200W PLATINUM II", price: 8990000, img: "/Hình ảnh/PC" },
+            { key: "case", brand: "MSI", name: "Vỏ Case MSI MEG MAESTRO 700L P2", price: 11990000, img: "/Hình ảnh/PC" }
+        ];
+
+        // HÀM MỞ HỘP THOẠI
+        function openPartModal(rowIndex, partKey, partLabel) {
+            activeRowIndex = rowIndex;
+            document.getElementById('modal-title-label').textContent = `Chọn ${partLabel}`;
+            document.getElementById('part-modal').style.display = 'flex';
+            
+            // Lọc danh sách sản phẩm theo đúng loại linh kiện (ví dụ: chỉ hiện CPU khi bấm nút CPU)
+            renderModalProducts(partKey);
+        }
+
+        // HÀM ĐÓNG HỘP THOẠI
+        function closePartModal() {
+            const modal = document.getElementById('part-modal');
+            if (modal) {
+                modal.style.display = 'none'; // Ẩn hộp thoại đi
+            }
+            activeRowIndex = null; // Reset lại dòng đang chọn
+        }
+
+        document.getElementById('close-modal-btn').addEventListener('click', closePartModal);
+
+        // VẼ DANH SÁCH SẢN PHẨM TRONG MODAL 
+        // VẼ DANH SÁCH SẢN PHẨM TRONG MODAL (LỌC NGẦM IM LẶNG)
+        function renderModalProducts(partKey) {
+            const modalList = document.getElementById('modal-products-list');
+            const currentList = configs[currentConfigId];
+            
+            // Lấy thông tin các linh kiện ĐÃ CHỌN trước đó trong cấu hình
+            const selectedCpu = currentList.find(i => i.key === 'cpu' && i.qty > 0);
+            const selectedMain = currentList.find(i => i.key === 'mainboard' && i.qty > 0);
+            const selectedRam = currentList.find(i => i.key === 'ram' && i.qty > 0);
+
+            fetch('/api/pc-parts')
+                .then(res => res.json())
+                .then(parts => {
+                    // 1. Lọc theo loại linh kiện (cpu, mainboard, ram...)
+                    let filteredParts = parts.filter(part => part.key === partKey);
+
+                    // 2. TỰ ĐỘNG LỌC NGẦM LINH KIỆN TƯƠNG THÍCH (KHÔNG HIỆN THÔNG BÁO)
+                    if (partKey === 'mainboard' && selectedCpu && selectedCpu.socket) {
+                        filteredParts = filteredParts.filter(p => p.socket === selectedCpu.socket);
+                    } 
+                    else if (partKey === 'cpu' && selectedMain && selectedMain.socket) {
+                        filteredParts = filteredParts.filter(p => p.socket === selectedMain.socket);
+                    }
+                    else if (partKey === 'ram' && selectedMain && selectedMain.ram_type) {
+                        filteredParts = filteredParts.filter(p => p.ram_type === selectedMain.ram_type);
+                    }
+                    else if (partKey === 'case' && selectedMain && selectedMain.form_factor) {
+                        filteredParts = filteredParts.filter(p => p.supported_form_factors && p.supported_form_factors.includes(selectedMain.form_factor));
+                    }
+
+                    if (filteredParts.length === 0) {
+                        modalList.innerHTML = `<p style="text-align: center; color: #8e8e93; padding: 20px;">Không có linh kiện nào phù hợp.</p>`;
+                        return;
+                    }
+
+                    // 3. VẼ DANH SÁCH LINH KIỆN SẠCH SẼ
+                    modalList.innerHTML = filteredParts.map(part => `
+                        <div class="modal-product-item">
+                            <div class="modal-prod-info">
+                                <img src="${part.img}" alt="${part.name}" onerror="this.src='/Hình ảnh/placeholder.png'">
+                                <div class="modal-prod-details">
+                                    <p class="modal-prod-name">${part.name}</p>
+                                    <span class="modal-prod-price">${formatVND(part.price)}</span>
+                                </div>
+                            </div>
+                            <button type="button" class="add-part-btn" onclick='selectPartToConfig(${JSON.stringify(part)})'>
+                                <span class="material-symbols-outlined" style="font-size:16px;">add</span> Thêm
+                            </button>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => {
+                    console.error('Lỗi tải linh kiện:', err);
+                    modalList.innerHTML = `<p style="text-align: center; color: red; padding: 20px;">Lỗi tải dữ liệu linh kiện.</p>`;
+                });
+        }
+
+        // XỬ LÝ LỰA CHỌN LINH KIỆN VÀO CẤU HÌNH ĐANG CHỈNH SỬA
+        function selectPartToConfig(part) {
+            if (activeRowIndex === null) return;
+
+            const currentList = configs[currentConfigId];
+            const cpu = currentList.find(i => i.key === 'cpu' && i.qty > 0);
+            const mainboard = currentList.find(i => i.key === 'mainboard' && i.qty > 0);
+            const ram = currentList.find(i => i.key === 'ram' && i.qty > 0);
+            const psu = currentList.find(i => i.key === 'psu' && i.qty > 0);
+            const vga = currentList.find(i => i.key === 'vga' && i.qty > 0);
+            const pcCase = currentList.find(i => i.key === 'case' && i.qty > 0);
+
+            // =================================================================
+            // CHỈ BẬT POPUP ALERT KHI CÓ LỖI KHÔNG TƯƠNG THÍCH
+            // =================================================================
+            
+            // 1. CẢNH BÁO SOCKET (CPU ↔ MAINBOARD)
+            if (part.key === 'mainboard' && cpu && cpu.socket && part.socket && cpu.socket !== part.socket) {
+                alert(`⚠️ KHÔNG TƯƠNG THÍCH SOCKET!\n\nMainboard này dùng Socket [${part.socket}], nhưng CPU bạn chọn trước đó dùng Socket [${cpu.socket}].`);
+                return;
+            }
+            if (part.key === 'cpu' && mainboard && mainboard.socket && part.socket && mainboard.socket !== part.socket) {
+                alert(`⚠️ KHÔNG TƯƠNG THÍCH SOCKET!\n\nCPU này dùng Socket [${part.socket}], nhưng Bo mạch chủ dùng Socket [${mainboard.socket}].`);
+                return;
+            }
+
+            // 2. CẢNH BÁO RAM (RAM ↔ MAINBOARD)
+            if (part.key === 'ram' && mainboard && mainboard.ram_type && part.ram_type && mainboard.ram_type !== part.ram_type) {
+                alert(`⚠️ KHÔNG TƯƠNG THÍCH RAM!\n\nRAM chuẩn [${part.ram_type}] không cắm vừa khe [${mainboard.ram_type}] của Mainboard.`);
+                return;
+            }
+
+            // 3. CẢNH BÁO VỎ CASE (MAINBOARD ↔ CASE)
+            if (part.key === 'case' && mainboard && mainboard.form_factor && part.supported_form_factors && !part.supported_form_factors.includes(mainboard.form_factor)) {
+                alert(`⚠️ KHÔNG VỪA VỎ CASE!\n\nVỏ Case này không hỗ trợ chuẩn Mainboard [${mainboard.form_factor}].`);
+                return;
+            }
+
+            // 4. CẢNH BÁO NGUỒN (PSU ↔ VGA)
+            if (part.key === 'psu' && vga && vga.recommended_psu && part.wattage && part.wattage < vga.recommended_psu) {
+                alert(`⚠️ NGUỒN BỊ YẾU!\n\nBộ nguồn ${part.wattage}W không đủ gánh Card [${vga.name}] (Cần tối thiểu ${vga.recommended_psu}W).`);
+                return;
+            }
+
+            // =================================================================
+            // TƯƠNG THÍCH -> ÂM THẦM CHỌN VÀ ĐÓNG MODAL (KHÔNG HIỆN THÔNG BÁO)
+            // =================================================================
+            const targetItem = currentList[activeRowIndex];
+            targetItem._id = part._id;
+            targetItem.name = part.name;
+            targetItem.price = part.price;
+            targetItem.img = part.img;
+            targetItem.socket = part.socket || '';
+            targetItem.ram_type = part.ram_type || '';
+            targetItem.form_factor = part.form_factor || '';
+            targetItem.supported_form_factors = part.supported_form_factors || [];
+            targetItem.wattage = part.wattage || 0;
+            targetItem.recommended_psu = part.recommended_psu || 0;
+            targetItem.qty = 1;
+
+            renderComponentList();
+            saveConfigsToStorage();
+            closePartModal();
+        }
+
+        // Hàm lưu cấu hình hiện tại vào bộ nhớ trình duyệt
+        function saveConfigsToStorage() {
+            localStorage.setItem('pc_builder_configs', JSON.stringify(configs));
+        }
+
+        // 1. HÀM BẬT POPUP THÔNG BÁO TỰ DỰNG (Thay thế alert)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('custom-toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (!toast) return;
+
+            // Cập nhật nội dung
+            toastMsg.textContent = message;
+
+            // Reset class
+            toast.className = 'custom-toast';
+
+            // Cấu hình theo kiểu thông báo (success, warning, error)
+            if (type === 'warning') {
+                toast.classList.add('toast-warning');
+                toastIcon.textContent = 'warning';
+                toastIcon.style.color = '#f59e0b';
+            } else if (type === 'error') {
+                toast.classList.add('toast-error');
+                toastIcon.textContent = 'error';
+                toastIcon.style.color = '#ef4444';
+            } else {
+                toastIcon.textContent = 'check_circle';
+                toastIcon.style.color = '#10b981';
+            }
+
+            // Hiển thị Popup
+            toast.classList.add('show');
+
+            // Tự động ẩn sau 3 giây
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+
+
+
+    </script>
+
+    <div id="part-modal" class="part-modal-overlay" style="display: none;">
+        <div class="part-modal-content">
+            <div class="part-modal-header">
+                <h2 id="modal-title-label">Chọn linh kiện</h2>
+                <button type="button" class="close-modal-btn" id="close-modal-btn" onclick="closePartModal()">&times;</button>
+            </div>
+
+            <div class="part-modal-body">
+                <aside class="modal-sidebar">
+                    <div class="filter-group">
+                        <p class="filter-group-title">Khoảng giá</p>
+                        <label class="filter-item"><input type="radio" name="price-filter" value="all" checked> Tất cả</label>
+                        <label class="filter-item"><input type="radio" name="price-filter" value="under-5"> Dưới 5 triệu</label>
+                        <label class="filter-item"><input type="radio" name="price-filter" value="5-15"> 5 - 15 triệu</label>
+                        <label class="filter-item"><input type="radio" name="price-filter" value="over-15"> Trên 15 triệu</label>
+                    </div>
+                    <div class="filter-group">
+                        <p class="filter-group-title">Hãng sản xuất</p>
+                        <label class="filter-item"><input type="checkbox" class="brand-filter" value="AMD"> AMD</label>
+                        <label class="filter-item"><input type="checkbox" class="brand-filter" value="Intel"> Intel</label>
+                        <label class="filter-item"><input type="checkbox" class="brand-filter" value="ASUS"> ASUS</label>
+                        <label class="filter-item"><input type="checkbox" class="brand-filter" value="MSI"> MSI</label>
+                        <label class="filter-item"><input type="checkbox" class="brand-filter" value="Samsung"> Samsung</label>
+                    </div>
+                </aside>
+
+                <section class="modal-main-content">
+                    <div class="modal-toolbar">
+                        <div class="modal-search-box">
+                            <label for="modal-search-input" class="visually-hidden">Tìm kiếm linh kiện</label>
+                            <input type="text" id="modal-search-input" placeholder="Nhập tên sản phẩm để tìm kiếm...">
+                            <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-products-list" id="modal-products-list">
+                        </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHUNG BÁO GIÁ ẨN ĐỂ CHỤP ẢNH (GIỐNG MẪU HACOM) -->
+    <!-- KHUNG BÁO GIÁ ẨN ĐỂ CHỤP ẢNH (SỬ DỤNG CLASS CSS TỪ FILE XAYDUNGCAUHINH.CSS) -->
+    <div id="quotation-export-container" aria-hidden="true">
+        <!-- 1. Header -->
+        <div class="quote-header">
+            <div>
+                <h1 class="quote-brand-title">5KHY</h1>
+                <p class="quote-brand-sub">Hệ thống bán lẻ máy tính & Thiết bị công nghệ</p>
+            </div>
+            <div style="text-align: right;">
+                <h2 class="quote-doc-title">BẢNG BÁO GIÁ PC</h2>
+                <p class="quote-doc-date" id="quote-export-date">Ngày lập: --/--/----</p>
+            </div>
+        </div>
+
+        <!-- 2. Bảng sản phẩm -->
+        <table class="quote-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 35px;">STT</th>
+                    <th style="width: 75px; text-align: center;">Hình ảnh</th>
+                    <th style="text-align: left;">Tên sản phẩm / Linh kiện</th>
+                    <th style="text-align: right; width: 95px;">Đơn giá</th>
+                    <th style="text-align: center; width: 45px;">SL</th>
+                    <th style="text-align: right; width: 110px;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody id="quotation-items-table-body">
+                <!-- Dữ liệu linh kiện sẽ do JS render vào đây -->
+            </tbody>
+        </table>
+
+        <!-- 3. Tổng tiền & Thông tin cửa hàng -->
+        <div class="quote-footer-section">
+            <div class="quote-store-info">
+                <p class="quote-store-name">CỬA HÀNG MÁY TÍNH 5KHY</p>
+                <p style="margin: 2px 0;">Địa chỉ: Nam Cần Thơ, Ninh Kiều, Cần Thơ</p>
+                <p style="margin: 2px 0;">Hotline hỗ trợ: 1900 5KHY (8h00 - 21h30)</p>
+                <p style="margin: 2px 0;">Website: https://5khy.com.vn</p>
+                <p style="margin: 8px 0 0 0; font-style: italic; color: #94a3b8;">* Báo giá có giá trị tham khảo. Giá thực tế có thể thay đổi theo thời điểm mua.</p>
+            </div>
+
+            <div class="quote-summary-box">
+                <div class="quote-summary-row">
+                    <span>Tổng tiền hàng:</span>
+                    <strong id="quote-subtotal-val" style="color: #1e293b;">0đ</strong>
+                </div>
+                <div class="quote-summary-row quote-summary-vat">
+                    <span>Thuế VAT:</span>
+                    <span style="color: #16a34a; font-weight: 700;">Đã bao gồm</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; font-weight: 800; color: #0f172a;">TỔNG CỘNG:</span>
+                    <strong id="quote-total-val" class="quote-total-price">0đ</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Lời cảm ơn -->
+        <div class="quote-thanks-bar">
+            CHÂN THÀNH CẢM ƠN QUÝ KHÁCH ĐÃ TIN TƯỞNG 5KHY!
+        </div>
+    </div>
+
+    <!-- KHUNG POPUP THÔNG BÁO TỰ DỰNG (CUSTOM TOAST) -->
+    <div id="custom-toast" class="custom-toast">
+        <span id="toast-icon" class="material-symbols-outlined toast-icon" style="color: #10b981;">check_circle</span>
+        <p id="toast-message">Đã sao chép liên kết thành công!</p>
+    </div>
+
+</body>
+</html>

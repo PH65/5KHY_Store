@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - 5KHY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/giohang.css">
+</head>
+<body>
+    <%- include('partials/header', { active: '' }) %>
+
+<main class="cart-container">
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li aria-hidden="true">&gt;</li>
+                <li class="active" aria-current="page">Giỏ hàng</li>
+            </ol>
+        </nav>
+
+        <h1 class="visually-hidden">Giỏ hàng của bạn</h1>
+
+        <div class="cart-layout">
+
+            <section class="cart-items-box" aria-labelledby="cart-list-title">
+                <h2 class="visually-hidden" id="cart-list-title">Danh sách sản phẩm trong giỏ</h2>
+
+                <div class="cart-table-header">
+                    <label class="cart-select-all">
+                        <input type="checkbox" id="select-all-cart">
+                        <span>Tất cả (<span id="selected-count">0</span>/<span id="total-count">0</span>)</span>
+                    </label>
+                    <span class="col-label col-price">Đơn giá</span>
+                    <span class="col-label col-qty">Số lượng</span>
+                    <span class="col-label col-total">Thành tiền</span>
+                </div>
+
+                <ul class="cart-items-list" id="cart-items-list">
+                    </ul>
+
+                <p class="cart-empty-msg" id="cart-empty-msg" hidden>Giỏ hàng của bạn đang trống. <a href="index.html">Tiếp tục mua sắm</a></p>
+            </section>
+
+            <section class="checkout-summary-box" aria-labelledby="checkout-title">
+                <h2 id="checkout-title">Thanh toán</h2>
+
+                <div class="summary-row">
+                    <span>Tạm tính</span>
+                    <span id="subtotal-price">0đ</span>
+                </div>
+
+                <form class="voucher-form" id="voucher-form">
+                    <label for="voucher-code" class="visually-hidden">Mã khuyến mãi</label>
+                    <input type="text" id="voucher-code" placeholder="Mã khuyến mãi">
+                    <button type="submit" class="apply-voucher-btn">Áp dụng</button>
+                </form>
+
+                <div class="summary-row">
+                    <span>Giảm</span>
+                    <span id="discount-price">0đ</span>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>Tổng cộng</span>
+                    <span id="total-price">0đ</span>
+                </div>
+
+                <button type="button" class="checkout-btn" id="checkout-btn">Thanh toán</button>
+            </section>
+
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+<script src="/js/cart.js"></script>
+<script>
+        // =================================================================
+        // 1. LẤY DỮ LIỆU GIỎ HÀNG THẬT TỪ MONGODB (collection cart_items) QUA API
+        // =================================================================
+        // Cấu trúc 1 item trả về từ MongoDB:
+        // { _id, cartId, productId, name, price, qty, img, variant, color, selected }
+        let cartData = [];
+
+        function formatVND(num) {
+            return num.toLocaleString('vi-VN') + 'đ';
+        }
+
+        async function loadCart() {
+            try {
+                cartData = await Cart.getItems();
+                renderCart();
+            } catch (err) {
+                console.error('Lỗi khi tải giỏ hàng:', err);
+                document.getElementById('cart-items-list').innerHTML =
+                    '<p style="padding:20px;color:#e74c3c;">Không tải được giỏ hàng. Vui lòng kiểm tra kết nối server/MongoDB.</p>';
+            }
+        }
+
+        // =================================================================
+        // 2. TỰ ĐỘNG VẼ GIAO DIỆN GIỎ HÀNG
+        // =================================================================
+        function renderCart() {
+            const list = document.getElementById('cart-items-list');
+            const emptyMsg = document.getElementById('cart-empty-msg');
+
+            if (cartData.length === 0) {
+                list.innerHTML = '';
+                emptyMsg.hidden = false;
+            } else {
+                emptyMsg.hidden = true;
+                list.innerHTML = cartData.map((item) => {
+                    const variantText = item.variant ? ` (${item.variant})` : '';
+                    const colorText = item.color ? ` - Màu: ${item.color}` : '';
+
+                    return `
+                        <li class="cart-item-row" data-id="${item._id}">
+                            <label class="item-select">
+                                <input type="checkbox" class="item-checkbox" ${item.selected ? 'checked' : ''}>
+                            </label>
+                            <div class="item-info">
+                                <img src="${item.img}" alt="${item.name}" onerror="this.style.visibility='hidden'">
+                                <div class="item-details">
+                                    <p class="item-name">${item.name}${variantText}</p>
+                                    ${item.color ? `<p class="item-meta-info" style="font-size: 12px; color: #8e8e93; margin-top: 4px;">${colorText}</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="item-unit-price">${formatVND(item.price)}</div>
+                            <div class="item-qty-control">
+                                <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng"><i class="fa-solid fa-minus"></i></button>
+                                <span class="qty-value">${item.qty}</span>
+                                <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div class="item-total-price">${formatVND(item.price * item.qty)}</div>
+                            <button type="button" class="item-delete-btn" aria-label="Xoá sản phẩm">
+                                <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+                            </button>
+                        </li>
+                    `;
+                }).join('');
+            }
+
+            updateSummary();
+        }
+
+        // =================================================================
+        // 3. TÍNH TOÁN TỔNG TIỀN VÀ TRẠNG THÁI CHỌN
+        // =================================================================
+        function updateSummary() {
+            const selectedItems = cartData.filter(i => i.selected);
+            const subtotal = selectedItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+            const selectedCountEl = document.getElementById('selected-count');
+            const totalCountEl = document.getElementById('total-count');
+            const subtotalPriceEl = document.getElementById('subtotal-price');
+            const totalPriceEl = document.getElementById('total-price');
+            const selectAllCheckbox = document.getElementById('select-all-cart');
+
+            if (selectedCountEl) selectedCountEl.textContent = selectedItems.reduce((sum, i) => sum + i.qty, 0);
+            if (totalCountEl) totalCountEl.textContent = cartData.reduce((sum, i) => sum + i.qty, 0);
+            if (subtotalPriceEl) subtotalPriceEl.textContent = formatVND(subtotal);
+            if (totalPriceEl) totalPriceEl.textContent = formatVND(subtotal);
+
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = cartData.length > 0 && selectedItems.length === cartData.length;
+            }
+        }
+
+        // =================================================================
+        // 4. XỬ LÝ SỰ KIỆN CLICKS (CHỌN, SỬA SỐ LƯỢNG, XÓA) - đồng bộ ngay với MongoDB
+        // =================================================================
+        document.getElementById('cart-items-list').addEventListener('click', function (e) {
+            const row = e.target.closest('.cart-item-row');
+            if (!row) return;
+
+            const itemId = row.dataset.id;
+            const item = cartData.find(i => i._id === itemId);
+            if (!item) return;
+
+            if (e.target.classList.contains('item-checkbox')) {
+                item.selected = e.target.checked;
+                updateSummary();
+                Cart.setSelected(itemId, item.selected).catch(err => console.error(err));
+            }
+            else if (e.target.closest('.qty-plus')) {
+                item.qty++;
+                renderCart();
+                Cart.updateQty(itemId, item.qty).catch(err => console.error(err));
+            }
+            else if (e.target.closest('.qty-minus')) {
+                if (item.qty > 1) {
+                    item.qty--;
+                    renderCart();
+                    Cart.updateQty(itemId, item.qty).catch(err => console.error(err));
+                }
+            }
+            else if (e.target.closest('.item-delete-btn')) {
+                if (confirm('Bạn có chắc muốn xoá sản phẩm này khỏi giỏ hàng không?')) {
+                    Cart.removeItem(itemId)
+                        .then(() => {
+                            cartData = cartData.filter(i => i._id !== itemId);
+                            renderCart();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Không xoá được sản phẩm, vui lòng thử lại!');
+                        });
+                }
+            }
+        });
+
+        // Chọn tất cả / Bỏ chọn tất cả
+        const selectAllCheckbox = document.getElementById('select-all-cart');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function (e) {
+                cartData.forEach(i => i.selected = e.target.checked);
+                renderCart();
+                Promise.all(cartData.map(i => Cart.setSelected(i._id, i.selected))).catch(err => console.error(err));
+            });
+        }
+
+        // Submit Voucher Form
+        const voucherForm = document.getElementById('voucher-form');
+        if (voucherForm) {
+            voucherForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                alert('Chức năng áp dụng mã giảm giá sẽ được kết nối ở phiên bản kế tiếp.');
+            });
+        }
+
+        // Kiểm tra và chuyển tiếp sang trang đặt hàng
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function () {
+                if (!cartData.some(i => i.selected)) {
+                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+                    return;
+                }
+                window.location.href = '/dathang.html';
+            });
+        }
+
+        // Khởi chạy: tải giỏ hàng thật từ MongoDB ngay khi vừa mở trang
+        loadCart();
+    </script>
+
+</body>
+</html>
