@@ -18,7 +18,7 @@
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
-                <li><a href="/index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li><a href="/"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
                 <li aria-hidden="true">&gt;</li>
                 <li class="active" aria-current="page">Máy tính bảng</li>
             </ol>
@@ -38,16 +38,16 @@
 <section class="filter-section" aria-labelledby="filter-title">
     <h2 class="filter-title" id="filter-title">Danh mục hãng máy tính bảng</h2>
     <div class="brand-tags">
-        <button type="button" class="brand-btn active" onclick="filterByBrand(event, 'all')">
+        <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
             <span>Tất cả</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Apple iPad')">
+        <button type="button" class="brand-btn" data-brand="Apple iPad" onclick="filterByBrand(event, 'Apple iPad')">
             <span>Apple iPad</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Samsung Galaxy Tab')">
+        <button type="button" class="brand-btn" data-brand="Samsung Galaxy Tab" onclick="filterByBrand(event, 'Samsung Galaxy Tab')">
             <span>Samsung Galaxy Tab</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Xiaomi Tab')">
+        <button type="button" class="brand-btn" data-brand="Xiaomi Tab" onclick="filterByBrand(event, 'Xiaomi Tab')">
             <span>Xiaomi Tab</span>
         </button>
     </div>
@@ -104,8 +104,7 @@
             </div>
         </form>
 
-        <div class="products-grid-layout" id="Tablets-container">
-            </div>
+        <div class="products-grid-layout" id="Tablets-container"></div>
 
         <div class="load-more-container">
             <button type="button" class="load-more-btn">Xem thêm sản phẩm</button>
@@ -114,28 +113,52 @@
     </main>
 
     <%- include('partials/footer') %>
+
 <script>
         function formatVND(price) {
             if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
             return Number(price).toLocaleString('vi-VN') + 'đ';
         }
+        
         const tabletsContainer = document.getElementById('Tablets-container');
         let allTabletsData = [];
         let currentLimit = 20;
-        let allTablets = [];
         let selectedBrand = 'all';
 
+        // 🟢 Đọc tham số URL (Ví dụ: /maytinhbang?brand=Apple iPad hoặc /maytinhbang?brand=Samsung)
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandFromUrl = urlParams.get('brand');
+        if (brandFromUrl) {
+            selectedBrand = brandFromUrl;
+        }
+
+        // Fetch API dữ liệu Tablet
         fetch('/api/tablets')
             .then(response => response.json())
             .then(data => {
                 allTabletsData = data;
-                renderTabletsUI(allTabletsData);
+                
+                // Highlight đúng nút lọc dựa trên brand truyền vào
+                highlightTabletBrandButton(selectedBrand);
+
+                // Thực hiện lọc ngay khi trang load xong
+                applyFilters();
             })
             .catch(err => console.error('Lỗi tải dữ liệu máy tính bảng:', err));
 
+        function highlightTabletBrandButton(brandName) {
+            document.querySelectorAll('.brand-btn').forEach(btn => {
+                const btnBrand = btn.getAttribute('data-brand');
+                if (btnBrand && (btnBrand.toLowerCase() === brandName.toLowerCase() || brandName.toLowerCase().includes(btnBrand.toLowerCase()) || btnBrand.toLowerCase().includes(brandName.toLowerCase()))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         function renderTabletsUI(tabletList) {
             if (!tabletsContainer) return;
-            allTablets = tabletList;
 
             if (tabletList.length === 0) {
                 tabletsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93;">Không tìm thấy sản phẩm nào phù hợp.</p>`;
@@ -175,11 +198,7 @@
                 `;
             }).join('');
 
-            if (currentLimit >= tabletList.length) {
-                toggleLoadMoreButton(false);
-            } else {
-                toggleLoadMoreButton(true);
-            }
+            toggleLoadMoreButton(currentLimit < tabletList.length);
         }
 
         function toggleLoadMoreButton(show) {
@@ -191,7 +210,7 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function () {
                 currentLimit += 20;
-                renderTabletsUI(allTablets);
+                applyFilters();
             });
         }
 
@@ -205,20 +224,19 @@
         }
 
         function filterByBrand(e, brandName) {
-            currentLimit = 20;
-            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            selectedBrand = brandName;
+            
             if (e && e.target) {
                 const clickedButton = e.target.closest('.brand-btn');
-                if (clickedButton) clickedButton.classList.add('active');
-            }
-            if (brandName === 'all') {
-                renderTabletsUI(allTabletsData);
+                if (clickedButton) {
+                    document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+                    clickedButton.classList.add('active');
+                }
             } else {
-                const filtered = allTabletsData.filter(item =>
-                    item.brand && item.brand.toLowerCase() === brandName.toLowerCase()
-                );
-                renderTabletsUI(filtered);
+                highlightTabletBrandButton(brandName);
             }
+
+            applyFilters();
         }
 
         function getBasePrice(item) {
@@ -232,15 +250,19 @@
             currentLimit = 20;
             let filtered = [...allTabletsData];
 
-            // 1. Lọc theo Thương hiệu
+            // 1. Lọc theo Thương hiệu (Lọc thông minh cả chuỗi ngắn như "Samsung" hay chuỗi dài "Apple iPad")
             if (selectedBrand !== 'all') {
-                filtered = filtered.filter(item => 
-                    item.brand && item.brand.toLowerCase().includes(selectedBrand.toLowerCase())
-                );
+                filtered = filtered.filter(item => {
+                    if (!item.brand) return false;
+                    const b1 = item.brand.toLowerCase();
+                    const b2 = selectedBrand.toLowerCase();
+                    return b1.includes(b2) || b2.includes(b1);
+                });
             }
 
-            // 2. Lọc theo CPU
-            const cpuVal = document.getElementById('filter-cpu').value.toLowerCase();
+            // 2. Lọc CPU
+            const cpuSelect = document.getElementById('filter-cpu');
+            const cpuVal = cpuSelect ? cpuSelect.value.toLowerCase() : '';
             if (cpuVal) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
@@ -248,8 +270,9 @@
                 });
             }
 
-            // 3. Lọc theo RAM
-            const ramVal = document.getElementById('filter-ram').value.toLowerCase();
+            // 3. Lọc RAM
+            const ramSelect = document.getElementById('filter-ram');
+            const ramVal = ramSelect ? ramSelect.value.toLowerCase() : '';
             if (ramVal) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
@@ -257,8 +280,9 @@
                 });
             }
 
-            // 4. Lọc theo Storage
-            const storageVal = document.getElementById('filter-storage').value.toLowerCase();
+            // 4. Lọc Storage
+            const storageSelect = document.getElementById('filter-storage');
+            const storageVal = storageSelect ? storageSelect.value.toLowerCase() : '';
             if (storageVal) {
                 filtered = filtered.filter(item => {
                     if (item.variants && item.variants.length > 0) {
@@ -269,8 +293,9 @@
                 });
             }
 
-            // 5. Sắp xếp theo Giá
-            const sortVal = document.getElementById('sort-products').value;
+            // 5. Sắp xếp giá
+            const sortSelect = document.getElementById('sort-products');
+            const sortVal = sortSelect ? sortSelect.value : 'featured';
             if (sortVal === 'price-asc') {
                 filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
             } else if (sortVal === 'price-desc') {
@@ -278,16 +303,6 @@
             }
 
             renderTabletsUI(filtered);
-        }
-
-        function filterByBrand(e, brandName) {
-            selectedBrand = brandName;
-            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
-            if (e && e.target) {
-                const clickedButton = e.target.closest('.brand-btn');
-                if (clickedButton) clickedButton.classList.add('active');
-            }
-            applyFilters();
         }
     </script>
 </body>

@@ -18,7 +18,7 @@
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
-                <li><a href="/index.html"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
+                <li><a href="/"><span class="material-symbols-outlined" aria-hidden="true">home</span> Trang chủ</a></li>
                 <li aria-hidden="true">&gt;</li>
                 <li class="active" aria-current="page">PC dựng sẵn</li>
             </ol>
@@ -29,19 +29,19 @@
 <section class="filter-section" aria-labelledby="filter-title">
     <h2 class="filter-title" id="filter-title">Danh mục PC theo cấu hình</h2>
     <div class="brand-tags">
-        <button type="button" class="brand-btn active" onclick="filterByBrand(event, 'all')">
+        <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
             <span>Tất cả</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'Intel Core i9')">
+        <button type="button" class="brand-btn" data-brand="Intel Core i9" onclick="filterByBrand(event, 'Intel Core i9')">
             <span>Intel Core i9</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'AMD Ryzen 9')">
+        <button type="button" class="brand-btn" data-brand="AMD Ryzen 9" onclick="filterByBrand(event, 'AMD Ryzen 9')">
             <span>AMD Ryzen 9</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'RTX 5070Ti')">
+        <button type="button" class="brand-btn" data-brand="RTX 5070Ti" onclick="filterByBrand(event, 'RTX 5070Ti')">
             <span>RTX 5070Ti</span>
         </button>
-        <button type="button" class="brand-btn" onclick="filterByBrand(event, 'RTX 5060Ti')">
+        <button type="button" class="brand-btn" data-brand="RTX 5060Ti" onclick="filterByBrand(event, 'RTX 5060Ti')">
             <span>RTX 5060Ti</span>
         </button>
     </div>
@@ -50,17 +50,17 @@
         <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp PC">
             <div class="dropdowns-group">
                 <label for="filter-cpu" class="visually-hidden">Vi xử lý</label>
-                <select id="filter-cpu"><option value="">Vi xử lý</option></select>
+                <select id="filter-cpu" onchange="applyFilters()"><option value="">Vi xử lý</option></select>
                 <label for="filter-vga" class="visually-hidden">Card đồ hoạ</label>
-                <select id="filter-vga"><option value="">Card đồ hoạ</option></select>
+                <select id="filter-vga" onchange="applyFilters()"><option value="">Card đồ hoạ</option></select>
                 <label for="filter-ram" class="visually-hidden">Dung lượng RAM</label>
-                <select id="filter-ram"><option value="">Dung lượng RAM</option></select>
+                <select id="filter-ram" onchange="applyFilters()"><option value="">Dung lượng RAM</option></select>
                 <label for="filter-storage" class="visually-hidden">Ổ cứng</label>
-                <select id="filter-storage"><option value="">Ổ cứng</option></select>
+                <select id="filter-storage" onchange="applyFilters()"><option value="">Ổ cứng</option></select>
             </div>
             <div class="sort-group">
                 <label for="sort-products">Sắp xếp theo:</label>
-                <select id="sort-products">
+                <select id="sort-products" onchange="applyFilters()">
                     <option value="featured">Nổi bật</option>
                     <option value="price-asc">Giá thấp đến cao</option>
                     <option value="price-desc">Giá cao đến thấp</option>
@@ -68,8 +68,7 @@
             </div>
         </form>
 
-        <div class="products-grid-layout" id="PCs-container">
-            </div>
+        <div class="products-grid-layout" id="PCs-container"></div>
 
         <div class="load-more-container">
             <button type="button" class="load-more-btn">Xem thêm sản phẩm</button>
@@ -78,11 +77,19 @@
     </main>
 
     <%- include('partials/footer') %>
+
 <script>
         const pcsContainer = document.getElementById('PCs-container');
         let allPCsData = [];
         let currentLimit = 20;
-        let allPCs = [];
+        let selectedFilter = 'all';
+
+        // 🟢 Đọc tham số từ URL (ví dụ: /pc?filter=Intel Core i9 hoặc /pc?filter=RTX 5070Ti)
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterFromUrl = urlParams.get('filter') || urlParams.get('brand');
+        if (filterFromUrl) {
+            selectedFilter = filterFromUrl;
+        }
 
         function formatPcPrice(price) {
             if (price === undefined || price === null || price === '') return 'Liên hệ';
@@ -94,13 +101,30 @@
             .then(response => response.json())
             .then(data => {
                 allPCsData = data;
-                renderPCsUI(allPCsData);
+                
+                // Highlight nút lọc tương ứng
+                highlightPcButton(selectedFilter);
+
+                // Áp dụng bộ lọc khi load xong dữ liệu
+                applyFilters();
             })
             .catch(err => console.error('Lỗi tải dữ liệu PC:', err));
 
+        function highlightPcButton(filterValue) {
+            document.querySelectorAll('.brand-btn').forEach(btn => {
+                const btnBrand = btn.getAttribute('data-brand');
+                if (btnBrand && (btnBrand.toLowerCase() === filterValue.toLowerCase() || 
+                    filterValue.toLowerCase().includes(btnBrand.toLowerCase()) || 
+                    btnBrand.toLowerCase().includes(filterValue.toLowerCase()))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         function renderPCsUI(pcList) {
             if (!pcsContainer) return;
-            allPCs = pcList;
 
             if (pcList.length === 0) {
                 pcsContainer.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93;">Không tìm thấy cấu hình PC nào phù hợp.</p>`;
@@ -132,11 +156,7 @@
                 `;
             }).join('');
 
-            if (currentLimit >= pcList.length) {
-                toggleLoadMoreButton(false);
-            } else {
-                toggleLoadMoreButton(true);
-            }
+            toggleLoadMoreButton(currentLimit < pcList.length);
         }
 
         function toggleLoadMoreButton(show) {
@@ -148,23 +168,63 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function () {
                 currentLimit += 20;
-                renderPCsUI(allPCs);
+                applyFilters();
             });
         }
 
         function filterByBrand(e, brandName) {
-            currentLimit = 20;
-            document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+            selectedFilter = brandName;
+            
             if (e && e.target) {
                 const clickedButton = e.target.closest('.brand-btn');
-                if (clickedButton) clickedButton.classList.add('active');
-            }
-            if (brandName === 'all') {
-                renderPCsUI(allPCsData);
+                if (clickedButton) {
+                    document.querySelectorAll('.brand-btn').forEach(btn => btn.classList.remove('active'));
+                    clickedButton.classList.add('active');
+                }
             } else {
-                const filtered = allPCsData.filter(item => item.brand === brandName);
-                renderPCsUI(filtered);
+                highlightPcButton(brandName);
             }
+
+            applyFilters();
+        }
+
+        function getPcNumericPrice(item) {
+            if (typeof item.price === 'number') return item.price;
+            if (typeof item.price === 'string') {
+                const clean = item.price.replace(/[^\d]/g, '');
+                return Number(clean) || 0;
+            }
+            return 0;
+        }
+
+        function applyFilters() {
+            currentLimit = 20;
+            let filtered = [...allPCsData];
+
+            // 1. Lọc theo Cấu hình/Thương hiệu (Lọc theo brand hoặc tìm trong tên/mô tả/CPU/VGA)
+            if (selectedFilter !== 'all') {
+                filtered = filtered.filter(item => {
+                    const target = selectedFilter.toLowerCase();
+                    const brandMatch = item.brand && item.brand.toLowerCase().includes(target);
+                    const nameMatch = item.name && item.name.toLowerCase().includes(target);
+                    const cpuMatch = item.cpu && item.cpu.toLowerCase().includes(target);
+                    const vgaMatch = item.vga && item.vga.toLowerCase().includes(target);
+                    const descMatch = item.desc && item.desc.toLowerCase().includes(target);
+
+                    return brandMatch || nameMatch || cpuMatch || vgaMatch || descMatch;
+                });
+            }
+
+            // 2. Sắp xếp theo giá
+            const sortSelect = document.getElementById('sort-products');
+            const sortVal = sortSelect ? sortSelect.value : 'featured';
+            if (sortVal === 'price-asc') {
+                filtered.sort((a, b) => getPcNumericPrice(a) - getPcNumericPrice(b));
+            } else if (sortVal === 'price-desc') {
+                filtered.sort((a, b) => getPcNumericPrice(b) - getPcNumericPrice(a));
+            }
+
+            renderPCsUI(filtered);
         }
     </script>
 </body>

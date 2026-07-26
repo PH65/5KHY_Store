@@ -1,5 +1,5 @@
 <header class="header-container">
-    <a href="/index.html" class="logo">5KHY</a>
+    <a href="/index" class="logo">5KHY</a>
 
     <!-- CẤU TRÚC FORM TÌM KIẾM CÓ BỌC WRAPPER ĐỂ ĐẶT DROPDOWN GỢI Ý -->
     <div class="search-wrapper" style="position: relative; flex: 1; max-width: 500px;">
@@ -28,15 +28,15 @@
 
     <div class="header-actions">
         <% if (typeof currentUser !== 'undefined' && currentUser) { %>
-            <a href="#" class="btn btn-login" onclick="event.preventDefault(); if(confirm('Đăng xuất khỏi tài khoản <%= currentUser.fullname %>?')) { fetch('/api/auth/logout', {method:'POST'}).then(() => window.location.href = '/index.html'); }">
+            <a href="#" class="btn btn-login" onclick="event.preventDefault(); if(confirm('Đăng xuất khỏi tài khoản <%= currentUser.fullname %>?')) { fetch('/api/auth/logout', {method:'POST'}).then(() => window.location.href = '/index'); }">
                 <i class="fa-solid fa-circle-user"></i> <%= currentUser.fullname %>
             </a>
         <% } else { %>
-            <a href="/dangnhap.html" class="btn btn-login">
+            <a href="/dangnhap" class="btn btn-login">
                 <i class="fa-solid fa-circle-user"></i> Đăng nhập
             </a>
         <% } %>
-        <a href="/giohang.html" class="btn btn-cart">
+        <a href="/giohang" class="btn btn-cart">
             <i class="fa-solid fa-bag-shopping"></i> Giỏ hàng
         </a>
     </div>
@@ -50,22 +50,22 @@
 
         <ul class="dropdown-menu">
             <li>
-                <button type="button" onclick="location.href='/dienthoai.html'">
+                <button type="button" onclick="location.href='/dienthoai'">
                     <i class="fa-solid fa-mobile"></i> Điện thoại
                 </button>
             </li>
             <li>
-                <button type="button" onclick="location.href='/maytinhbang.html'">
+                <button type="button" onclick="location.href='/maytinhbang'">
                     <i class="fa-solid fa-tablet"></i> Máy tính bảng
                 </button>
             </li>
             <li>
-                <button type="button" onclick="location.href='/pc.html'">
+                <button type="button" onclick="location.href='/pc'">
                     <i class="fa-solid fa-desktop"></i> PC
                 </button>
             </li>
             <li>
-                <button type="button" onclick="location.href='/xaydungcauhinh.html'">
+                <button type="button" onclick="location.href='/xaydungcauhinh'">
                     <i class="fa-solid fa-screwdriver-wrench"></i> Xây dựng cấu hình PC
                 </button>
             </li>
@@ -74,22 +74,22 @@
 
     <ul class="nav-list">
         <li>
-            <button type="button" onclick="location.href='/dienthoai.html'" <%= active === 'dienthoai' ? 'aria-current="page"' : '' %>>
+            <button type="button" onclick="location.href='/dienthoai'" <%= active === 'dienthoai' ? 'aria-current="page"' : '' %>>
                 <i class="fa-solid fa-mobile"></i> Điện thoại
             </button>
         </li>
         <li>
-            <button type="button" onclick="location.href='/maytinhbang.html'" <%= active === 'maytinhbang' ? 'aria-current="page"' : '' %>>
+            <button type="button" onclick="location.href='/maytinhbang'" <%= active === 'maytinhbang' ? 'aria-current="page"' : '' %>>
                 <i class="fa-solid fa-tablet"></i> Máy tính bảng
             </button>
         </li>
         <li>
-            <button type="button" onclick="location.href='/pc.html'" <%= active === 'pc' ? 'aria-current="page"' : '' %>>
+            <button type="button" onclick="location.href='/pc'" <%= active === 'pc' ? 'aria-current="page"' : '' %>>
                 <i class="fa-solid fa-desktop"></i> PC
             </button>
         </li>
         <li>
-            <button type="button" onclick="location.href='/xaydungcauhinh.html'" <%= active === 'xaydungcauhinh' ? 'aria-current="page"' : '' %>>
+            <button type="button" onclick="location.href='/xaydungcauhinh'" <%= active === 'xaydungcauhinh' ? 'aria-current="page"' : '' %>>
                 <i class="fa-solid fa-screwdriver-wrench"></i> Xây dựng cấu hình PC
             </button>
         </li>

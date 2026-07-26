@@ -673,6 +673,7 @@
 
 /* Từng chiếc thẻ sản phẩm trắng */
 .product-card {
+    width: 100%;
     flex: 1; /* Chia đều 5 hộp bằng nhau khít 100% chiều ngang */
     background: white;
     border-radius: 16px;
@@ -729,6 +730,7 @@
     overflow-x: auto;
     height: 35px;
     align-items: center;
+    width: 100%;
     scrollbar-width: none;
 }
 .prod-variants::-webkit-scrollbar { display: none; }
@@ -944,14 +946,15 @@
     font-size: 14px;
 }
 
-/* Khóa định dạng cho thẻ bao bọc sản phẩm */
 .product-card-link {
-    text-decoration: none !important; /* Xóa gạch chân chữ */
-    color: inherit !important;           /* Giữ nguyên toàn bộ màu chữ nguyên bản */
-    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
+    display: flex;
+    flex: 1 1 calc(20% - 13px);
+    max-width: calc(20% - 13px);
+    width: 100%;
 }
 
-/* Hiệu ứng nhấc nhẹ khi di chuột qua card cho sinh động */
 .product-card-link:hover .product-card {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
