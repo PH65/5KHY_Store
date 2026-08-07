@@ -243,7 +243,7 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function () {
                 currentLimit += 20; 
-                applyFilters();
+                applyFilters(false);
             });
         }
 
@@ -270,8 +270,10 @@
             return Number(item.price) || 0;
         }
 
-        function applyFilters() {
-            currentLimit = 20; 
+        function applyFilters(resetLimit = true) {
+            if (resetLimit) {
+                currentLimit = 20; 
+            }
             let filtered = [...allPhonesData];
 
             if (selectedBrand !== 'all') {

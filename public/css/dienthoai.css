@@ -21,13 +21,13 @@ body {
     padding: 0;          /* Xóa padding mặc định của ol */
     margin: 0;           /* Xóa margin mặc định của ol */
     margin-bottom: 25px;
-    font-family: "Nunito Sans", sans-serif !important;
+    font-family: "Nunito Sans", sans-serif;
     font-size: 15px;
 }
 
 /* CÁC PHẦN TỬ CON (Thẻ li, a) */
 .breadcrumb li {
-    font-family: "Nunito Sans", sans-serif !important;
+    font-family: "Nunito Sans", sans-serif;
     color: #333; /* Màu mặc định cho chữ và dấu ">" */
     display: inline-flex;
     align-items: center;
@@ -35,7 +35,7 @@ body {
 
 /* Định dạng riêng cho thẻ link Trang chủ */
 .breadcrumb li a {
-    font-family: "Nunito Sans", sans-serif !important; 
+    font-family: "Nunito Sans", sans-serif; 
     text-decoration: none;
     color: #333;
     display: inline-flex;
@@ -50,14 +50,14 @@ body {
 
 /* TRẠNG THÁI TRANG HIỆN TẠI (Thẻ li có class active) */
 .breadcrumb li.active { 
-    font-family: "Nunito Sans", sans-serif !important; 
+    font-family: "Nunito Sans", sans-serif; 
     font-weight: 800;    
     color: #333; 
 }
 
 /* ĐỊNH DẠNG KHÓA CỨNG ICON GOOGLE */
 .breadcrumb .material-symbols-outlined {
-    font-family: 'Material Symbols Outlined' !important; /* Khóa font gốc của icon */
+    font-family: 'Material Symbols Outlined'; /* Khóa font gốc của icon */
     font-size: 25px;     
     line-height: 1;      /* Chống lệch dòng */
 }
@@ -220,9 +220,9 @@ body {
 
 /* Thẻ link bọc ngoài */
 .product-card-link {
-    text-decoration: none !important;
-    color: inherit !important;
-    display: flex !important;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
     width: 100%;
     height: 100%;
 }
@@ -335,14 +335,14 @@ body {
 
 /* GHI ĐÈ VÀ GIẢI PHÓNG KÍCH THƯỚC CARD CHO TRANG DIENTHOAI/MAYTINHBANG */
 .products-grid-layout .product-card-link {
-    max-width: none !important;  /* Bỏ giới hạn độ rộng của style.css */
-    flex: none !important;       /* Bỏ chia flexbox của style.css */
-    width: 100% !important;      /* Ép phủ kín 100% chiều rộng của ô Grid */
-    height: 100% !important;
-    display: flex !important;
+    max-width: none;  /* Bỏ giới hạn độ rộng của style.css */
+    flex: none;       /* Bỏ chia flexbox của style.css */
+    width: 100%;      /* Ép phủ kín 100% chiều rộng của ô Grid */
+    height: 100%;
+    display: flex;
 }
 
 .products-grid-layout .product-card {
-    width: 100% !important;
-    height: 100% !important;
+    width: 100%;
+    height: 100%;
 }

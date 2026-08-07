@@ -884,7 +884,7 @@
 
 .tag-btn-tablet.active, .view-all-btn.active {
     background-color: #FF8D28;
-    color: #FFFFFF !important;
+    color: #FFFFFF;
     border-color: #FF8D28;
     font-weight: 600;
 }
@@ -934,11 +934,8 @@
 }
 
 
-
-
-
 .site-footer {
-    background: #1c1c1e;
+    background: linear-gradient(to top, #ff5300, #FF8D28);
     color: #e5e5ea;
     text-align: center;
     padding: 24px 20px;
@@ -947,8 +944,8 @@
 }
 
 .product-card-link {
-    text-decoration: none !important;
-    color: inherit !important;
+    text-decoration: none;
+    color: inherit;
     display: flex;
     flex: 1 1 calc(20% - 13px);
     max-width: calc(20% - 13px);
