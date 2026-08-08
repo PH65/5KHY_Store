@@ -510,8 +510,8 @@
    ================================================================= */
 .arrow-btn {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 50% !important;
+    transform: translateY(-50%) !important;
     width: 45px;
     height: 45px;
     background: rgba(255, 255, 255, 0.9); /* Tăng độ đục màu trắng nền nhìn cho rõ */
@@ -525,6 +525,8 @@
     z-index: 10;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.15); /* Tăng bóng đổ cho nút nổi bật hẳn lên */
     transition: all 0.2s ease;
+    padding: 0;                            /* Đảm bảo không bị dính padding thừa */
+    margin: 0;
 }
 
 .arrow-btn:hover {
@@ -545,6 +547,20 @@
 .arrow-btn .material-symbols-outlined {
     font-size: 20px;
     font-weight: bold;
+    display: inline-block;
+    line-height: 1;
+    width: auto;
+    height: auto;
+    margin: 0;
+}
+
+/* Sửa khoảng lệch đặc thù của font Google Material Symbol */
+.prev-btn .material-symbols-outlined {
+    padding-left: 10px; /* Đẩy nhẹ icon sang phải cho chuẩn tâm nút tròn */
+}
+
+.next-btn .material-symbols-outlined {
+    padding-right: 0px; /* Cân đối cho nút bên phải */
 }
 
 /* =================================================================

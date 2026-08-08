@@ -32,17 +32,6 @@
         <h1 class="payment-title">Xác nhận thanh toán</h1>
         <p class="payment-subtitle">Thông tin thanh toán của bạn sẽ luôn được bảo mật 100%</p>
 
-        <div class="payment-method-tabs" role="tablist" aria-label="Phương thức thanh toán">
-            <button type="button" class="method-tab" role="tab" aria-selected="false">
-                <span class="method-tab-title">Thẻ thanh toán quốc tế</span>
-                <span class="method-tab-desc">Hỗ trợ Visa, Mastercard, JCB</span>
-            </button>
-            <button type="button" class="method-tab active" role="tab" aria-selected="true">
-                <span class="method-tab-title">Chuyển khoản QR Ngân hàng <i class="fa-solid fa-check-circle" aria-hidden="true"></i></span>
-                <span class="method-tab-desc">Quét mã QR VietQR / VNPAY tự động</span>
-            </button>
-        </div>
-
         <section class="qr-payment-box" aria-labelledby="qr-title">
             <h2 id="qr-title">Vui lòng quét mã QR bên dưới để thanh toán chính xác số tiền</h2>
 
@@ -71,11 +60,6 @@
             </div>
         </section>
 
-        <label class="confirm-transfer-check">
-            <input type="checkbox" id="transfer-confirmed">
-            <span>Tôi xác nhận đã chuyển khoản thành công <span class="material-symbols-outlined" aria-hidden="true">check_circle</span></span>
-        </label>
-
         <button type="button" class="confirm-payment-btn" id="confirm-payment-btn">Xác nhận thanh toán & Hoàn tất đơn hàng</button>
         <p class="confirm-payment-hint">Vui lòng kiểm tra lại thông tin trước khi xác nhận</p>
 
@@ -95,6 +79,9 @@
             window.location.href = '/giohang';
         }
 
+        // Khai báo biến toàn cục để quản lý bộ đếm thời gian
+        let countdownInterval = null;
+
         async function loadOrder() {
             try {
                 const res = await fetch(`/api/orders/${orderCode}`);
@@ -105,36 +92,59 @@
                 document.getElementById('pay-amount').textContent = formatVND(order.totalAmount);
                 document.getElementById('qr-code-img').src =
                     `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${order.orderCode}-${order.totalAmount}`;
+
+                // Tính thời gian đếm ngược dựa vào createdAt hoặc orderDate từ Database
+                const timeSource = order.createdAt || order.orderDate;
+                startCountdown(timeSource);
+
             } catch (err) {
                 console.error('Lỗi khi tải đơn hàng:', err);
                 alert('Không tải được thông tin đơn hàng!');
                 window.location.href = '/giohang';
             }
         }
+
+        function startCountdown(createdAtString) {
+            if (!createdAtString) return;
+
+            // Chuyển đổi thời gian tạo đơn sang Timestamp
+            const createdAt = new Date(createdAtString).getTime();
+            const expireTime = createdAt + (15 * 60 * 1000); // 15 phút sau khi tạo đơn
+
+            const timerEl = document.getElementById('countdown-timer');
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = expireTime - now;
+
+                if (distance <= 0) {
+                    clearInterval(countdownInterval);
+                    timerEl.textContent = "00:00";
+                    alert('Đã hết thời gian giữ hàng. Đơn hàng sẽ bị hủy.');
+                    window.location.href = '/giohang';
+                    return;
+                }
+
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const m = String(minutes).padStart(2, '0');
+                const s = String(seconds).padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
+            }
+
+            updateTimer();
+            countdownInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Gọi hàm tải dữ liệu đơn hàng
         loadOrder();
 
-        let secondsLeft = 15 * 60;
-        const timerEl = document.getElementById('countdown-timer');
-
-        const countdownInterval = setInterval(() => {
-            secondsLeft--;
-            if (secondsLeft <= 0) {
-                clearInterval(countdownInterval);
-                timerEl.textContent = "00:00";
-                alert('Đã hết thời gian giữ hàng. Đơn hàng sẽ bị huỷ.');
-                return;
-            }
-            const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
-            const s = String(secondsLeft % 60).padStart(2, '0');
-            timerEl.textContent = `${m}:${s}`;
-        }, 1000);
-
+        // Xử lý sự kiện bấm nút xác nhận thanh toán
         document.getElementById('confirm-payment-btn').addEventListener('click', async function () {
-            if (!document.getElementById('transfer-confirmed').checked) {
-                alert('Vui lòng tích chọn xác nhận bạn đã chuyển khoản thành công!');
-                return;
-            }
-            clearInterval(countdownInterval);
+            if (countdownInterval) clearInterval(countdownInterval);
             this.disabled = true;
 
             try {

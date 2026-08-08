@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận đơn hàng - 5KHY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/xacnhan.css">
+</head>
+<body>
+    <%- include('partials/header', { active: '' }) %>
+
+    <main class="confirm-container">
+        <div class="confirm-icon-box">
+            <i class="fa-solid fa-clock icon-clock"></i>
+        </div>
+
+        <h1 class="confirm-title">Đơn hàng đang chờ xác nhận!</h1>
+        <p class="confirm-desc">Cảm ơn bạn đã đặt hàng tại 5KHY Store.</p>
+        <p class="confirm-desc">Đơn hàng COD của bạn đã được ghi nhận vào hệ thống thành công.</p>
+        <div class="order-code-wrapper">
+            Mã đơn hàng: 
+            <div class="order-code-box">
+                <span id="display-order-code">...</span>
+                <button type="button" class="btn-copy-code" id="btn-copy" title="Sao chép mã đơn hàng">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="confirm-note">
+            <i class="fa-solid fa-circle-info"></i>
+            Đơn hàng sẽ được Admin kiểm tra và xác nhận sớm nhất. Vui lòng giữ kết nối điện thoại để nhân viên liên hệ giao hàng và thu tiền (COD).
+        </div>
+
+        <a href="/" class="btn-home">
+            <i class="fa-solid fa-house"></i> Quay về trang chủ
+        </a>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        const orderCode = new URLSearchParams(window.location.search).get('order');
+        if (orderCode) {
+            document.getElementById('display-order-code').textContent = orderCode;
+        }
+
+        // Xử lý sự kiện sao chép mã đơn hàng
+        document.getElementById('btn-copy').addEventListener('click', function() {
+            const codeText = document.getElementById('display-order-code').textContent;
+            
+            if (!codeText || codeText === '...') return;
+
+            navigator.clipboard.writeText(codeText).then(() => {
+                // Đổi icon và thông báo khi copy thành công
+                this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                this.classList.add('copied');
+
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fa-regular fa-copy"></i>';
+                    this.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Lỗi khi copy:', err);
+            });
+        });
+    </script>
+</body>
+</html>

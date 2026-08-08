@@ -89,3 +89,7 @@ connectDB().then(() => {
         console.log(`Server đang chạy tại: http://localhost:${PORT}`);
     });
 });
+
+app.get('/xacnhan', (req, res) => {
+    res.render('xacnhan');
+});

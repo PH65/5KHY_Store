@@ -240,6 +240,7 @@
                 ward: document.getElementById('ward').value,
                 note: document.getElementById('note').value
             };
+
             const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
 
             fetch('/api/orders', {
@@ -251,8 +252,13 @@
                 const order = await res.json();
                 if (!res.ok) throw new Error(order.error || 'Không tạo được đơn hàng.');
                 
-                // Đồng bộ chính xác đường dẫn chuyển hướng sang trang thanh toán
-                window.location.href = `/thanhtoan.html?order=${order.orderCode}`;
+                if (paymentMethod === 'transfer') {
+                    // Chuyển khoản -> Sang trang QR
+                    window.location.href = `/thanhtoan?order=${order.orderCode}`;
+                } else if (paymentMethod === 'cod') {
+                    // COD -> Chuyển sang trang thông báo chờ xác nhận riêng
+                    window.location.href = `/xacnhan?order=${order.orderCode}`;
+                }
             })
             .catch((err) => {
                 alert(err.message);

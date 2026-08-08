@@ -33,9 +33,11 @@ router.post('/', async (req, res) => {
             timeZone: 'Asia/Ho_Chi_Minh',
             hour12: false
         });
+
+        // Tạo đơn hàng
         const order = await Order.create({
             orderCode,
-            userId: req.session.userId || null,
+            userId: (req.session && req.session.userId) ? req.session.userId : null,
             cartId,
             items,
             shipping,
@@ -43,6 +45,11 @@ router.post('/', async (req, res) => {
             totalAmount,
             status: 'pending',
             orderDate: nowVN
+        });
+
+        await CartItem.deleteMany({
+            cartId: cartId,
+            selected: true
         });
 
         res.status(201).json(order);
