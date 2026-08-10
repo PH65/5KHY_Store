@@ -60,7 +60,6 @@
             </div>
         </section>
 
-        <button type="button" class="confirm-payment-btn" id="confirm-payment-btn">Xác nhận thanh toán & Hoàn tất đơn hàng</button>
         <p class="confirm-payment-hint">Vui lòng kiểm tra lại thông tin trước khi xác nhận</p>
 
     </main>
@@ -68,6 +67,36 @@
     <%- include('partials/footer') %>
 
     <script>
+        let pollingInterval = null;
+
+        function startPaymentPolling(orderCode) {
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/orders/${orderCode}`);
+                    const orderData = await res.json();
+
+                    // Kiểm tra trạng thái thanh toán từ Server (bạn cần đảm bảo API trả về biến status hoặc isPaid)
+                    if (orderData.status === 'paid' || orderData.isPaid === true) {
+                        // 1. Dừng vòng lặp kiểm tra và dừng đếm ngược
+                        clearInterval(pollingInterval);
+                        if (countdownInterval) clearInterval(countdownInterval);
+
+                        // 2. Cập nhật giao diện: Ẩn mã QR, hiển thị thông báo thành công
+                        const qrContent = document.querySelector('.qr-payment-content');
+                        qrContent.innerHTML = `
+                            <div style="text-align: center; color: #27ae60; padding: 40px; width: 100%;">
+                                <i class="fa-solid fa-circle-check" style="font-size: 60px; margin-bottom: 20px;"></i>
+                                <h2 style="font-size: 24px; margin-bottom: 10px;">Thanh toán thành công!</h2>
+                                <p>Hệ thống đã ghi nhận thanh toán cho đơn hàng <strong>${orderCode}</strong>.</p>
+                                <p>Đang chuyển hướng về trang chủ...</p>
+                            </div>
+                        `;
+                    }
+                } catch (err) {
+                    console.error('Lỗi khi polling trạng thái:', err);
+                }
+            }, 3000); // 3000ms = 3 giây
+        }
         function formatVND(num) {
             return num.toLocaleString('vi-VN') + 'đ';
         }
@@ -90,12 +119,17 @@
 
                 document.getElementById('pay-content').textContent = order.orderCode;
                 document.getElementById('pay-amount').textContent = formatVND(order.totalAmount);
-                document.getElementById('qr-code-img').src =
-                    `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${order.orderCode}-${order.totalAmount}`;
+                // Thay '192.168.1.X' bằng địa chỉ IPv4 thực tế của máy tính bạn
+                const localIP = '172.16.118.48'; 
+                const mockPayUrl = `http://${localIP}:3000/mock-pay?order=${order.orderCode}`;
+
+                document.getElementById('qr-code-img').src =    
+                    `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mockPayUrl)}`;
 
                 // Tính thời gian đếm ngược dựa vào createdAt hoặc orderDate từ Database
                 const timeSource = order.createdAt || order.orderDate;
                 startCountdown(timeSource);
+                startPaymentPolling(order.orderCode);
 
             } catch (err) {
                 console.error('Lỗi khi tải đơn hàng:', err);

@@ -4,7 +4,9 @@ const router = express.Router();
 const Order = require('../models/Order');
 const CartItem = require('../models/CartItem');
 
-// Tạo đơn hàng từ các sản phẩm đã chọn trong giỏ hàng
+// ==========================================
+// 1. TẠO ĐƠN HÀNG (Đoạn này đã bị xóa nhầm và được khôi phục)
+// ==========================================
 router.post('/', async (req, res) => {
     try {
         const { cartId, shipping, paymentMethod } = req.body;
@@ -59,13 +61,61 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Lấy thông tin đơn hàng theo orderCode + Format giờ Việt Nam
+// ==========================================
+// 2. API WEBHOOK GIẢ LẬP (Đã thêm)
+// ==========================================
+router.post('/webhook', async (req, res) => {
+    try {
+        // Ngân hàng sẽ gửi data qua req.body (Payload)
+        const { orderCode, transactionStatus, amount, bankCode } = req.body;
+
+        console.log('--- NHẬN WEBHOOK TỪ NGÂN HÀNG ---');
+        console.log('Mã đơn:', orderCode, '| Trạng thái giao dịch:', transactionStatus);
+
+        if (transactionStatus === '00') {
+            const order = await Order.findOneAndUpdate(
+                { orderCode: orderCode },
+                { 
+                    status: 'paid',
+                    paymentMethod: bankCode || 'Chuyển khoản mã QR'
+                },
+                { returnDocument: 'after' }
+            );
+
+            if (!order) {
+                return res.status(404).json({ message: 'Không tìm thấy đơn hàng trong hệ thống' });
+            }
+
+            if (order.cartId) {
+                await Promise.all(order.items.map(i =>
+                    CartItem.deleteOne({
+                        cartId: order.cartId,
+                        productId: i.productId,
+                        variant: i.variant || '',
+                        color: i.color || ''
+                    })
+                ));
+            }
+
+            return res.status(200).json({ RspCode: '00', Message: 'Confirm Success' });
+        } else {
+            return res.status(200).json({ RspCode: '01', Message: 'Transaction Failed' });
+        }
+
+    } catch (error) {
+        console.error('Lỗi khi xử lý Webhook:', error);
+        res.status(500).json({ RspCode: '99', Message: 'Unknown error' });
+    }
+});
+
+// ==========================================
+// 3. LẤY THÔNG TIN ĐƠN HÀNG
+// ==========================================
 router.get('/:orderCode', async (req, res) => {
     try {
         const order = await Order.findOne({ orderCode: req.params.orderCode }).lean();
         if (!order) return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
 
-        // 🛠️ SỬA CHỖ NÀY: Định dạng thời gian sang chuẩn Giờ Việt Nam (GMT+7)
         const formattedCreatedAt = order.createdAt 
             ? new Date(order.createdAt).toLocaleString('vi-VN', {
                 timeZone: 'Asia/Ho_Chi_Minh',
@@ -75,14 +125,16 @@ router.get('/:orderCode', async (req, res) => {
 
         res.json({
             ...order,
-            createdAtFormatted: formattedCreatedAt // Trả thêm trường giờ VN này về cho Frontend hiển thị
+            createdAtFormatted: formattedCreatedAt
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Xác nhận đã thanh toán -> cập nhật trạng thái + dọn các sản phẩm tương ứng khỏi giỏ hàng
+// ==========================================
+// 4. XÁC NHẬN THANH TOÁN (Trực tiếp)
+// ==========================================
 router.put('/:orderCode/confirm', async (req, res) => {
     try {
         const order = await Order.findOneAndUpdate(

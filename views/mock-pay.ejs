@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xác nhận chuyển khoản</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { font-family: 'Nunito Sans', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .mobile-container { background: #fff; width: 100%; max-width: 400px; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; text-align: center; }
+        .header { margin-bottom: 30px; margin-top: 20px; }
+        .header i { font-size: 50px; color: #0066cc; }
+        .order-info { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .order-info p { margin: 10px 0; font-size: 15px; color: #555; display: flex; justify-content: space-between; }
+        .order-info strong { color: #222; }
+        .btn-confirm { background: #ff6b00; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.3s; }
+        .btn-confirm:disabled { background: #ccc; }
+        .success-msg { display: none; margin-top: 30px; color: #27ae60; }
+        .success-msg i { font-size: 40px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <i class="fa-solid fa-building-columns"></i>
+            <h2>App Ngân Hàng</h2>
+        </div>
+
+        <div class="order-info" id="order-details">
+            <p>Đang tải thông tin...</p>
+        </div>
+
+        <button class="btn-confirm" id="btn-pay" disabled>Xác nhận chuyển khoản</button>
+
+        <div class="success-msg" id="success-msg">
+            <i class="fa-solid fa-circle-check"></i>
+            <h3>Chuyển khoản thành công!</h3>
+            <p>Vui lòng kiểm tra màn hình máy tính.</p>
+        </div>
+    </div>
+
+    <script>
+        const orderCode = new URLSearchParams(window.location.search).get('order');
+        const btnPay = document.getElementById('btn-pay');
+        const detailsDiv = document.getElementById('order-details');
+
+        if (!orderCode) {
+            detailsDiv.innerHTML = '<p style="color:red; text-align:center;">Mã đơn hàng không hợp lệ!</p>';
+        } else {
+            // Hiển thị mã đơn hàng tạm thời
+            detailsDiv.innerHTML = `
+                <p>Nội dung: <strong>${orderCode}</strong></p>
+                <p>Tới tài khoản: <strong>Công ty TNHH 5KHY</strong></p>
+                <p style="margin-top: 15px; font-size: 13px; text-align: center; color: #888;">(Demo mô phỏng quét mã thanh toán)</p>
+            `;
+            btnPay.disabled = false;
+        }
+
+        btnPay.addEventListener('click', async () => {
+            btnPay.disabled = true;
+            btnPay.innerText = 'Ngân hàng đang xử lý...';
+
+            try {
+                // ĐÓNG VAI TRÒ LÀ SERVER NGÂN HÀNG BẮN WEBHOOK VỀ HỆ THỐNG CỦA BẠN
+                const webhookPayload = {
+                    orderCode: orderCode,
+                    transactionStatus: '00', // Giả lập mã thành công
+                    amount: 27390000, 
+                    bankCode: 'VNPAY_QR'
+                };
+
+                const res = await fetch('/api/orders/webhook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(webhookPayload)
+                });
+
+                const data = await res.json();
+                
+                // Kiểm tra xem Server E-commerce có phản hồi RspCode '00' không
+                if (data.RspCode === '00') {
+                    // Đổi giao diện điện thoại sang thành công
+                    btnPay.style.display = 'none';
+                    detailsDiv.style.display = 'none';
+                    document.getElementById('success-msg').style.display = 'block';
+                } else {
+                    throw new Error('Server web từ chối Webhook');
+                }
+
+            } catch (err) {
+                alert('Có lỗi xảy ra: ' + err.message);
+                btnPay.disabled = false;
+                btnPay.innerText = 'Xác nhận chuyển khoản';
+            }
+        });
+    </script>
+</body>
+</html>

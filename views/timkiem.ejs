@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả tìm kiếm: <%= keyword %> - 5KHY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/style.css"> 
+    <link rel="stylesheet" href="/css/dienthoai.css"> 
+    <style>
+        .search-result-title {
+            text-align: center;
+            font-family: "Montserrat", sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin: 40px 0 30px;
+            color: #1e293b;
+        }
+        .search-keyword-highlight {
+            color: #ff8d28;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { active: '' }) %>
+
+    <main class="container_dienthoai">
+        <!-- Tiêu đề động -->
+        <h1 class="search-result-title">
+            Kết quả tìm kiếm cho từ khoá: <span class="search-keyword-highlight"><%= keyword %></span>
+        </h1>
+
+        <!-- Vùng chứa danh sách kết quả (Dùng Grid của trang điện thoại) -->
+        <div class="products-grid-layout" id="search-results-container">
+            <p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93; font-size: 16px;">
+                Đang tìm kiếm sản phẩm...
+            </p>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        function formatVND(price) {
+            if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
+            return Number(price).toLocaleString('vi-VN') + 'đ';
+        }
+
+        const currentKeyword = "<%= keyword %>";
+
+        if (currentKeyword.trim() !== '') {
+            // Tái sử dụng API tìm kiếm chung mà bạn đã viết trong productRoutes.js
+            fetch(`/api/search?q=${encodeURIComponent(currentKeyword)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('search-results-container');
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color: #8e8e93; font-size: 16px;">Không tìm thấy sản phẩm nào khớp với từ khóa <strong>"${currentKeyword}"</strong>.</p>`;
+                        return;
+                    }
+
+                    // Render danh sách sản phẩm
+                    container.innerHTML = data.map((product, idx) => {
+                        const variantsHtml = product.variants ? product.variants.map((v, i) => `
+                            <span class="${i === 0 ? 'active' : ''}" role="button" tabindex="0" data-price="${formatVND(v.price)}" onclick="changePrice(event, this, ${idx})">
+                                ${v.storage || v.label || ''}
+                            </span>
+                        `).join('') : '';
+
+                        const rawPrice = product.variants && product.variants.length > 0 ? product.variants[0].price : product.price;
+                        const defaultPrice = formatVND(rawPrice);
+                        const displayRating = product.rating ? Number(product.rating).toFixed(1) : "0";
+
+                        return `
+                            <a href="/chitiet?id=${product._id}&type=${product.productType}" class="product-card-link">
+                                <article class="product-card" id="search-card-${idx}">
+                                    <figure class="prod-img">
+                                        <img src="${product.img}" alt="${product.name}">
+                                    </figure>
+                                    <div class="prod-info">
+                                        <h3 class="prod-name">${product.name}</h3>
+                                        <div class="prod-variants" onclick="event.preventDefault();">${variantsHtml}</div>
+                                        <div class="prod-price price-display">${defaultPrice}</div>
+                                        <div class="prod-rating">
+                                            <i class="fa-solid fa-star"></i> ${displayRating}
+                                        </div>
+                                    </div>
+                                </article>
+                            </a>
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    console.error("Lỗi:", err);
+                    document.getElementById('search-results-container').innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: red;">Đã xảy ra lỗi khi tìm kiếm.</p>`;
+                });
+        }
+
+        function changePrice(event, element, idx) {
+            event.preventDefault(); 
+            const card = document.getElementById(`search-card-${idx}`);
+            if (!card) return;
+            card.querySelectorAll('.prod-variants span').forEach(s => s.classList.remove('active'));
+            element.classList.add('active');
+            card.querySelector('.price-display').innerText = element.getAttribute('data-price');
+        }
+    </script>
+</body>
+</html>
