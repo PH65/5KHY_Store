@@ -120,7 +120,7 @@
                 document.getElementById('pay-content').textContent = order.orderCode;
                 document.getElementById('pay-amount').textContent = formatVND(order.totalAmount);
                 // Thay '192.168.1.X' bằng địa chỉ IPv4 thực tế của máy tính bạn
-                const localIP = '172.16.118.48'; 
+                const localIP = '172.16.118.19'; 
                 const mockPayUrl = `http://${localIP}:3000/mock-pay?order=${order.orderCode}`;
 
                 document.getElementById('qr-code-img').src =    
