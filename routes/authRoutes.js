@@ -6,38 +6,70 @@ const User = require('../models/User');
 
 const SALT_ROUNDS = 10;
 
-// 1. API ĐĂNG KÝ (ĐÃ BỎ LƯU SESSION)
+// Các biểu thức Regex kiểm tra định dạng
+const PHONE_REGEX = /^0\d{9}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const HAS_NUMBER_REGEX = /\d/;
+
+// 1. API ĐĂNG KÝ
 router.post('/register', async (req, res) => {
     try {
-        const { fullname, email, phone, password } = req.body;
+        let { fullname, email, phone, password } = req.body;
 
+        // Cắt bỏ khoảng trắng thừa
+        fullname = fullname ? fullname.trim() : '';
+        email = email ? email.trim() : '';
+        phone = phone ? phone.trim() : '';
+
+        // Kiểm tra bắt buộc nhập
         if (!fullname || !email || !phone || !password) {
             return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin.' });
         }
+
+        // Kiểm tra Họ và Tên: Không được chứa chữ số
+        if (HAS_NUMBER_REGEX.test(fullname)) {
+            return res.status(400).json({ error: 'Họ và tên không được chứa chữ số.' });
+        }
+
+        // Kiểm tra định dạng Email
+        if (!EMAIL_REGEX.test(email)) {
+            return res.status(400).json({ error: 'Địa chỉ email không hợp lệ.' });
+        }
+
+        // Kiểm tra định dạng Số điện thoại: 10 số, bắt đầu bằng số 0
+        if (!PHONE_REGEX.test(phone)) {
+            return res.status(400).json({ error: 'Số điện thoại không hợp lệ!' });
+        }
+
+        // Kiểm tra độ dài mật khẩu
         if (password.length < 6) {
             return res.status(400).json({ error: 'Mật khẩu phải có ít nhất 6 ký tự.' });
         }
 
         // Kiểm tra xem SĐT hoặc Email đã tồn tại chưa
-        const existing = await User.findOne({ $or: [{ phone }, { email }] });
-        if (existing) {
-            return res.status(409).json({ error: 'Số điện thoại hoặc Email này đã được đăng ký.' });
+        // 1. Kiểm tra Số điện thoại đã tồn tại chưa
+        const existingPhone = await User.findOne({ phone: phone });
+        if (existingPhone) {
+            return res.status(409).json({ error: 'Số điện thoại này đã được đăng ký.' });
+        }
+
+        // 2. Kiểm tra Email đã tồn tại chưa
+        const existingEmail = await User.findOne({ email: email });
+        if (existingEmail) {
+            return res.status(409).json({ error: 'Email này đã được đăng ký.' });
         }
 
         // Mã hóa mật khẩu
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
         
-        // Tạo tài khoản mới (mặc định role là user)
-        const user = await User.create({ 
+        // Tạo tài khoản mới
+        await User.create({ 
             fullname, 
             email, 
             phone, 
             passwordHash,
             role: 'user' 
         });
-
-        // ⚠️ BỎ DÒNG req.session.userId Ở ĐÂY 
-        // Để sau khi đăng ký xong khách KHÔNG bị tự động đăng nhập!
 
         res.status(201).json({ 
             success: true, 
@@ -49,13 +81,23 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// 2. API ĐĂNG NHẬP (LƯU SESSION & TRẢ VỀ ROLE ADMIN / USER)
+// 2. API ĐĂNG NHẬP
 router.post('/login', async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        let { phone, password } = req.body;
+
+        phone = phone ? phone.trim() : '';
 
         if (!phone || !password) {
-            return res.status(400).json({ error: 'Vui lòng nhập số điện thoại và mật khẩu.' });
+            return res.status(400).json({ error: 'Vui lòng nhập tài khoản và mật khẩu.' });
+        }
+
+        // Kiểm tra định dạng: Bắt buộc phải là Email hoặc SĐT 10 số
+        const isPhone = PHONE_REGEX.test(phone);
+        const isEmail = EMAIL_REGEX.test(phone);
+
+        if (!isPhone && !isEmail) {
+            return res.status(400).json({ error: 'Tên đăng nhập phải là Email hoặc Số điện thoại.' });
         }
 
         // Tìm user theo SĐT hoặc Email
@@ -64,16 +106,16 @@ router.post('/login', async (req, res) => {
         });
 
         if (!user) {
-            return res.status(401).json({ error: 'Số điện thoại hoặc mật khẩu không đúng.' });
+            return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' });
         }
 
         // So sánh mật khẩu băm bcrypt
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Số điện thoại hoặc mật khẩu không đúng.' });
+            return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' });
         }
 
-        // CHỈ LƯU SESSION TẠI ĐÂY KHI ĐĂNG NHẬP THÀNH CÔNG!
+        // Lưu session khi đăng nhập thành công
         req.session.userId = user._id;
         req.session.user = {
             id: user._id,
@@ -88,7 +130,7 @@ router.post('/login', async (req, res) => {
             id: user._id, 
             fullname: user.fullname, 
             phone: user.phone,
-            role: user.role || 'user' // Trả về role để frontend phân hướng
+            role: user.role || 'user'
         });
     } catch (error) {
         console.error('Lỗi đăng nhập:', error);
@@ -104,7 +146,7 @@ router.post('/logout', (req, res) => {
     });
 });
 
-// 4. API LẤY THÔNG TIN USER HIỆN TẠI (DÙNG ĐỂ RENDER HEADER)
+// 4. API LẤY THÔNG TIN USER HIỆN TẠI
 router.get('/me', async (req, res) => {
     if (!req.session.userId) return res.json({ user: null });
     try {

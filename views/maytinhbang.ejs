@@ -14,7 +14,7 @@
 <body>
     <%- include('partials/header', { active: 'maytinhbang' }) %>
 
-<main class="container_dienthoai">
+    <main class="container_dienthoai">
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
@@ -35,74 +35,105 @@
             </figure>
         </div>
 
-<section class="filter-section" aria-labelledby="filter-title">
-    <h2 class="filter-title" id="filter-title">Danh mục hãng máy tính bảng</h2>
-    <div class="brand-tags">
-        <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
-            <span>Tất cả</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="Apple iPad" onclick="filterByBrand(event, 'Apple iPad')">
-            <span>Apple iPad</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="Samsung Galaxy Tab" onclick="filterByBrand(event, 'Samsung Galaxy Tab')">
-            <span>Samsung Galaxy Tab</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="Xiaomi Tab" onclick="filterByBrand(event, 'Xiaomi Tab')">
-            <span>Xiaomi Tab</span>
-        </button>
-    </div>
-</section>
+        <section class="filter-section" aria-labelledby="filter-title">
+            <h2 class="filter-title" id="filter-title">Danh mục hãng máy tính bảng</h2>
+            <div class="brand-tags">
+                <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
+                    <span>Tất cả</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="Apple iPad" onclick="filterByBrand(event, 'Apple iPad')">
+                    <span>Apple iPad</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="Samsung Galaxy Tab" onclick="filterByBrand(event, 'Samsung Galaxy Tab')">
+                    <span>Samsung Galaxy Tab</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="Xiaomi Tab" onclick="filterByBrand(event, 'Xiaomi Tab')">
+                    <span>Xiaomi Tab</span>
+                </button>
+            </div>
+        </section>
 
-        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp máy tính bảng">
+        <!-- THANH TIÊU CHÍ NÂNG CAO VỚI CUSTOM DROPDOWN -->
+        <div class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp máy tính bảng">
             <div class="dropdowns-group">
-                <!-- Vi xử lý -->
-                <select id="filter-cpu" onchange="applyFilters()">
-                    <option value="">Vi xử lý</option>
-                    <option value="apple">Apple Silicon</option>
-                    <option value="snapdragon">Snapdragon</option>
-                    <option value="helio">MediaTek</option>
-                    <option value="exynos">Exynos</option>
-                </select>
+                <!-- 1. Vi xử lý -->
+                <div class="custom-select-wrapper" id="wrapper-cpu" data-filter="cpu">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Vi xử lý</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Vi xử lý</div>
+                        <div class="custom-option-item" data-value="apple">Apple Silicon</div>
+                        <div class="custom-option-item" data-value="snapdragon">Snapdragon</div>
+                        <div class="custom-option-item" data-value="helio">MediaTek</div>
+                        <div class="custom-option-item" data-value="exynos">Exynos</div>
+                    </div>
+                </div>
 
-                <!-- RAM -->
-                <select id="filter-ram" onchange="applyFilters()">
-                    <option value="">Dung lượng RAM</option>
-                    <option value="4gb">4 GB</option>
-                    <option value="6gb">6 GB</option>
-                    <option value="8gb">8 GB</option>
-                    <option value="12gb">12 GB</option>
-                    <option value="16gb">16 GB</option>
-                </select>
+                <!-- 2. Dung lượng RAM -->
+                <div class="custom-select-wrapper" id="wrapper-ram" data-filter="ram">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Dung lượng RAM</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">RAM</div>
+                        <div class="custom-option-item" data-value="4gb">4 GB</div>
+                        <div class="custom-option-item" data-value="6gb">6 GB</div>
+                        <div class="custom-option-item" data-value="8gb">8 GB</div>
+                        <div class="custom-option-item" data-value="12gb">12 GB</div>
+                        <div class="custom-option-item" data-value="16gb">16 GB</div>
+                    </div>
+                </div>
 
-                <!-- Bộ nhớ trong -->
-                <select id="filter-storage" onchange="applyFilters()">
-                    <option value="">Bộ nhớ trong</option>
-                    <option value="64gb">64 GB</option>
-                    <option value="128gb">128 GB</option>
-                    <option value="256gb">256 GB</option>
-                    <option value="512gb">512 GB</option>
-                    <option value="1tb">1 TB</option>
-                </select>
+                <!-- 3. Bộ nhớ trong -->
+                <div class="custom-select-wrapper" id="wrapper-storage" data-filter="storage">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Bộ nhớ trong</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Tất cả bộ nhớ</div>
+                        <div class="custom-option-item" data-value="64gb">64 GB</div>
+                        <div class="custom-option-item" data-value="128gb">128 GB</div>
+                        <div class="custom-option-item" data-value="256gb">256 GB</div>
+                        <div class="custom-option-item" data-value="512gb">512 GB</div>
+                        <div class="custom-option-item" data-value="1tb">1 TB</div>
+                    </div>
+                </div>
 
-                <!-- Màn hình -->
-                <select id="filter-screen" onchange="applyFilters()">
-                    <option value="">Màn hình</option>
-                    <option value="small">Dưới 10 inch</option>
-                    <option value="medium">10 - 12 inch</option>
-                    <option value="large">Trên 12 inch</option>
-                </select>
+                <!-- 4. Màn hình -->
+                <div class="custom-select-wrapper" id="wrapper-screen" data-filter="screen">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Màn hình</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Tất cả kích thước</div>
+                        <div class="custom-option-item" data-value="small">Dưới 10 inch</div>
+                        <div class="custom-option-item" data-value="medium">10 - 12 inch</div>
+                        <div class="custom-option-item" data-value="large">Trên 12 inch</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Sắp xếp giá -->
-            <div class="sort-group">
-                <label for="sort-products">Sắp xếp theo:</label>
-                <select id="sort-products" onchange="applyFilters()">
-                    <option value="featured">Nổi bật</option>
-                    <option value="price-asc">Giá thấp đến cao</option>
-                    <option value="price-desc">Giá cao đến thấp</option>
-                </select>
+            <!-- Sắp xếp theo giá -->
+            <div class="sort-group" style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; color: #333;">Sắp xếp theo:</span>
+                <div class="custom-select-wrapper" id="wrapper-sort" data-filter="sort">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Nổi bật</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="featured">Nổi bật</div>
+                        <div class="custom-option-item" data-value="price-asc">Giá thấp đến cao</div>
+                        <div class="custom-option-item" data-value="price-desc">Giá cao đến thấp</div>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
 
         <div class="products-grid-layout" id="Tablets-container"></div>
 
@@ -114,7 +145,7 @@
 
     <%- include('partials/footer') %>
 
-<script>
+    <script>
         function formatVND(price) {
             if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
             return Number(price).toLocaleString('vi-VN') + 'đ';
@@ -125,12 +156,63 @@
         let currentLimit = 20;
         let selectedBrand = 'all';
 
-        // 🟢 Đọc tham số URL (Ví dụ: /maytinhbang?brand=Apple iPad hoặc /maytinhbang?brand=Samsung)
+        // Biến lưu trữ trạng thái bộ lọc
+        const filterState = {
+            cpu: '',
+            ram: '',
+            storage: '',
+            screen: '',
+            sort: 'featured'
+        };
+
+        // Đọc tham số URL (Ví dụ: /maytinhbang?brand=Apple iPad)
         const urlParams = new URLSearchParams(window.location.search);
         const brandFromUrl = urlParams.get('brand');
         if (brandFromUrl) {
             selectedBrand = brandFromUrl;
         }
+
+        // Khởi tạo sự kiện đóng/mở & chọn cho Custom Dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.custom-select-wrapper');
+
+            dropdowns.forEach(wrapper => {
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                const options = wrapper.querySelectorAll('.custom-option-item');
+                const label = wrapper.querySelector('.selected-label');
+                const filterKey = wrapper.dataset.filter;
+
+                // Bấm mở/đóng dropdown
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    dropdowns.forEach(w => {
+                        if (w !== wrapper) w.classList.remove('open');
+                    });
+                    wrapper.classList.toggle('open');
+                });
+
+                // Bấm chọn option
+                options.forEach(opt => {
+                    opt.addEventListener('click', function () {
+                        options.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Cập nhật text hiển thị trên nút bấm
+                        label.textContent = this.textContent;
+                        wrapper.classList.remove('open');
+
+                        // Lưu giá trị lọc và kích hoạt lọc lại danh sách
+                        filterState[filterKey] = this.dataset.value;
+                        applyFilters();
+                    });
+                });
+            });
+
+            // Nhấp chuột ra ngoài thì đóng toàn bộ dropdown
+            document.addEventListener('click', function () {
+                dropdowns.forEach(wrapper => wrapper.classList.remove('open'));
+            });
+        });
 
         // Fetch API dữ liệu Tablet
         fetch('/api/tablets')
@@ -210,7 +292,7 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function () {
                 currentLimit += 20;
-                applyFilters();
+                applyFilters(false);
             });
         }
 
@@ -246,11 +328,13 @@
             return Number(item.price) || 0;
         }
 
-        function applyFilters() {
-            currentLimit = 20;
+        function applyFilters(resetLimit = true) {
+            if (resetLimit) {
+                currentLimit = 20;
+            }
             let filtered = [...allTabletsData];
 
-            // 1. Lọc theo Thương hiệu (Lọc thông minh cả chuỗi ngắn như "Samsung" hay chuỗi dài "Apple iPad")
+            // 1. Lọc theo Thương hiệu
             if (selectedBrand !== 'all') {
                 filtered = filtered.filter(item => {
                     if (!item.brand) return false;
@@ -261,44 +345,36 @@
             }
 
             // 2. Lọc CPU
-            const cpuSelect = document.getElementById('filter-cpu');
-            const cpuVal = cpuSelect ? cpuSelect.value.toLowerCase() : '';
-            if (cpuVal) {
+            if (filterState.cpu) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(cpuVal);
+                    return textSearch.includes(filterState.cpu.toLowerCase());
                 });
             }
 
             // 3. Lọc RAM
-            const ramSelect = document.getElementById('filter-ram');
-            const ramVal = ramSelect ? ramSelect.value.toLowerCase() : '';
-            if (ramVal) {
+            if (filterState.ram) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(ramVal);
+                    return textSearch.includes(filterState.ram.toLowerCase());
                 });
             }
 
-            // 4. Lọc Storage
-            const storageSelect = document.getElementById('filter-storage');
-            const storageVal = storageSelect ? storageSelect.value.toLowerCase() : '';
-            if (storageVal) {
+            // 4. Lọc Bộ nhớ trong
+            if (filterState.storage) {
                 filtered = filtered.filter(item => {
                     if (item.variants && item.variants.length > 0) {
-                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(storageVal));
+                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(filterState.storage.toLowerCase()));
                     }
                     const textSearch = ((item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(storageVal);
+                    return textSearch.includes(filterState.storage.toLowerCase());
                 });
             }
 
             // 5. Sắp xếp giá
-            const sortSelect = document.getElementById('sort-products');
-            const sortVal = sortSelect ? sortSelect.value : 'featured';
-            if (sortVal === 'price-asc') {
+            if (filterState.sort === 'price-asc') {
                 filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
-            } else if (sortVal === 'price-desc') {
+            } else if (filterState.sort === 'price-desc') {
                 filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
             }
 

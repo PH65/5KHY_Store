@@ -221,27 +221,43 @@
             document.getElementById('total-price').textContent = formatVND(subtotal);
         }
 
+        ['fullname', 'email', 'phone', 'address', 'city', 'ward', 'note'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => el.setCustomValidity(''));
+                el.addEventListener('change', () => el.setCustomValidity(''));
+            }
+        });
+        
         document.getElementById('order-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            if (!this.checkValidity()) {
-                this.reportValidity();
-                return;
-            }
 
+            const fullnameInput = document.getElementById('fullname');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const addressInput = document.getElementById('address');
+            const citySelect = document.getElementById('city');
+            const wardSelect = document.getElementById('ward');
             const submitBtn = document.getElementById('confirm-order-btn');
-            submitBtn.disabled = true;
+
+            // QUAN TRỌNG: Xóa sạch toàn bộ trạng thái lỗi cũ trước khi gửi
+            [fullnameInput, emailInput, phoneInput, addressInput, citySelect, wardSelect].forEach(el => {
+                if (el) el.setCustomValidity('');
+            });
 
             const shipping = {
-                fullname: document.getElementById('fullname').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                address: document.getElementById('address').value,
-                city: document.getElementById('city').value,
-                ward: document.getElementById('ward').value,
-                note: document.getElementById('note').value
+                fullname: fullnameInput.value.trim(),
+                email: emailInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                address: addressInput.value.trim(),
+                city: citySelect.value,
+                ward: wardSelect.value,
+                note: document.getElementById('note').value.trim()
             };
 
             const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+            submitBtn.disabled = true;
 
             fetch('/api/orders', {
                 method: 'POST',
@@ -250,18 +266,48 @@
             })
             .then(async (res) => {
                 const order = await res.json();
-                if (!res.ok) throw new Error(order.error || 'Không tạo được đơn hàng.');
+                if (!res.ok) {
+                    // Ném lỗi nhận từ orderRoutes.js
+                    throw new Error(order.error || 'Không tạo được đơn hàng.');
+                }
                 
                 if (paymentMethod === 'transfer') {
-                    // Chuyển khoản -> Sang trang QR
                     window.location.href = `/thanhtoan?order=${order.orderCode}`;
                 } else if (paymentMethod === 'cod') {
-                    // COD -> Chuyển sang trang thông báo chờ xác nhận riêng
                     window.location.href = `/xacnhan?order=${order.orderCode}`;
                 }
             })
             .catch((err) => {
-                alert(err.message);
+                const errMsg = err.message;
+
+                // Reset lại lỗi trước khi gán bong bóng mới
+                [fullnameInput, emailInput, phoneInput, addressInput, citySelect, wardSelect].forEach(el => {
+                    if (el) el.setCustomValidity('');
+                });
+
+                // Bật BONG BÓNG chỉ thẳng vào từng ô tương ứng theo thông báo từ backend
+                if (errMsg.includes('Họ và tên') || errMsg.includes('tên người nhận')) {
+                    fullnameInput.setCustomValidity(errMsg);
+                    fullnameInput.reportValidity();
+                } else if (errMsg.includes('Số điện thoại') || errMsg.includes('SĐT')) {
+                    phoneInput.setCustomValidity(errMsg);
+                    phoneInput.reportValidity();
+                } else if (errMsg.includes('email') || errMsg.includes('Email')) {
+                    emailInput.setCustomValidity(errMsg);
+                    emailInput.reportValidity();
+                } else if (errMsg.includes('Địa chỉ') || errMsg.includes('địa chỉ')) {
+                    addressInput.setCustomValidity(errMsg);
+                    addressInput.reportValidity();
+                } else if (errMsg.includes('Tỉnh') || errMsg.includes('Thành phố')) {
+                    citySelect.setCustomValidity(errMsg);
+                    citySelect.reportValidity();
+                } else if (errMsg.includes('Phường') || errMsg.includes('Xã')) {
+                    wardSelect.setCustomValidity(errMsg);
+                    wardSelect.reportValidity();
+                } else {
+                    alert(errMsg); // Các lỗi chung khác (như giỏ hàng rỗng, lỗi kết nối DB)
+                }
+
                 submitBtn.disabled = false;
             });
         });

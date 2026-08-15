@@ -99,6 +99,7 @@
 <!-- XỬ LÝ SỰ KIỆN LIVE SEARCH -->
 <script>
     let searchDebounceTimer = null;
+    
 
     function onSearchInput(value) {
         const query = value.trim();
@@ -127,16 +128,20 @@
                     
                     // Render HTML khớp chuẩn 100% với Class trong style.css
                     dropdown.innerHTML = topSuggests.map(item => {
-                        const price = item.variants && item.variants.length > 0 
+                        // 1. Lấy giá tiền thô từ biến thể hoặc thuộc tính price
+                        let rawPrice = (item.variants && item.variants.length > 0) 
                             ? item.variants[0].price 
-                            : (typeof item.price === 'number' ? item.price.toLocaleString('vi-VN') + 'đ' : (item.price || 'Liên hệ'));
+                            : item.price;
+
+                        // 2. Chạy qua hàm formatVND để ra định dạng có dấu chấm và đơn vị 'đ'
+                        const displayPrice = formatVND(rawPrice);
 
                         return `
                             <a href="/chitiet?id=${item._id}&type=${item.productType}" class="suggestion-item">
                                 <img src="${item.img}" alt="${item.name}" class="suggestion-img">
                                 <div class="suggestion-info">
                                     <div class="suggestion-name">${item.name}</div>
-                                    <div class="suggestion-price">${price}</div>
+                                    <div class="suggestion-price">${displayPrice}</div>
                                 </div>
                             </a>
                         `;

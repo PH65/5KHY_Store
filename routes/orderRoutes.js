@@ -4,13 +4,48 @@ const router = express.Router();
 const Order = require('../models/Order');
 const CartItem = require('../models/CartItem');
 
+const PHONE_REGEX = /^0\d{9}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const HAS_NUMBER_REGEX = /\d/;
+
 // ==========================================
-// 1. TẠO ĐƠN HÀNG (Đoạn này đã bị xóa nhầm và được khôi phục)
+// 1. TẠO ĐƠN HÀNG (CÓ VALIDATE DỮ LIỆU GIAO HÀNG)
 // ==========================================
 router.post('/', async (req, res) => {
     try {
         const { cartId, shipping, paymentMethod } = req.body;
         if (!cartId) return res.status(400).json({ error: 'Thiếu cartId.' });
+
+        if (!shipping) {
+            return res.status(400).json({ error: 'Vui lòng cung cấp thông tin giao hàng.' });
+        }
+
+        const fullname = shipping.fullname ? shipping.fullname.trim() : '';
+        const phone = shipping.phone ? shipping.phone.trim() : '';
+        const email = shipping.email ? shipping.email.trim() : '';
+        const address = shipping.address ? shipping.address.trim() : '';
+        const city = shipping.city || '';
+        const ward = shipping.ward || '';
+
+        // 1. Validate bắt buộc
+        if (!fullname || !phone || !address || !city || !ward) {
+            return res.status(400).json({ error: 'Vui lòng điền đầy đủ các trường thông tin giao hàng bắt buộc.' });
+        }
+
+        // 2. Validate Họ tên không chứa số
+        if (HAS_NUMBER_REGEX.test(fullname)) {
+            return res.status(400).json({ error: 'Họ và tên người nhận không được chứa chữ số.' });
+        }
+
+        // 3. Validate Số điện thoại 10 số, đầu 0
+        if (!PHONE_REGEX.test(phone)) {
+            return res.status(400).json({ error: 'Số điện thoại không hợp lệ!' });
+        }
+
+        // 4. Validate Email nếu có nhập
+        if (email && !EMAIL_REGEX.test(email)) {
+            return res.status(400).json({ error: 'Địa chỉ email không đúng định dạng.' });
+        }
 
         const selectedItems = await CartItem.find({ cartId, selected: true });
         if (selectedItems.length === 0) {
@@ -42,7 +77,15 @@ router.post('/', async (req, res) => {
             userId: (req.session && req.session.userId) ? req.session.userId : null,
             cartId,
             items,
-            shipping,
+            shipping: {
+                fullname,
+                email,
+                phone,
+                address,
+                city,
+                ward,
+                note: shipping.note ? shipping.note.trim() : ''
+            },
             paymentMethod: paymentMethod || 'transfer',
             totalAmount,
             status: 'pending',
@@ -62,11 +105,10 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 2. API WEBHOOK GIẢ LẬP (Đã thêm)
+// 2. API WEBHOOK GIẢ LẬP
 // ==========================================
 router.post('/webhook', async (req, res) => {
     try {
-        // Ngân hàng sẽ gửi data qua req.body (Payload)
         const { orderCode, transactionStatus, amount, bankCode } = req.body;
 
         console.log('--- NHẬN WEBHOOK TỪ NGÂN HÀNG ---');
@@ -133,7 +175,7 @@ router.get('/:orderCode', async (req, res) => {
 });
 
 // ==========================================
-// 4. XÁC NHẬN THANH TOÁN (Trực tiếp)
+// 4. XÁC NHẬN THANH TOÁN
 // ==========================================
 router.put('/:orderCode/confirm', async (req, res) => {
     try {

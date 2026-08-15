@@ -14,7 +14,7 @@
 <body>
     <%- include('partials/header', { active: 'pc' }) %>
 
-<main class="container_dienthoai">
+    <main class="container_dienthoai">
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
@@ -26,47 +26,110 @@
 
         <h1 class="page-title">PC DỰNG SẴN</h1>
 
-<section class="filter-section" aria-labelledby="filter-title">
-    <h2 class="filter-title" id="filter-title">Danh mục PC theo cấu hình</h2>
-    <div class="brand-tags">
-        <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
-            <span>Tất cả</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="Intel Core i9" onclick="filterByBrand(event, 'Intel Core i9')">
-            <span>Intel Core i9</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="AMD Ryzen 9" onclick="filterByBrand(event, 'AMD Ryzen 9')">
-            <span>AMD Ryzen 9</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="RTX 5070Ti" onclick="filterByBrand(event, 'RTX 5070Ti')">
-            <span>RTX 5070Ti</span>
-        </button>
-        <button type="button" class="brand-btn" data-brand="RTX 5060Ti" onclick="filterByBrand(event, 'RTX 5060Ti')">
-            <span>RTX 5060Ti</span>
-        </button>
-    </div>
-</section>
+        <section class="filter-section" aria-labelledby="filter-title">
+            <h2 class="filter-title" id="filter-title">Danh mục PC theo cấu hình</h2>
+            <div class="brand-tags">
+                <button type="button" class="brand-btn active" data-brand="all" onclick="filterByBrand(event, 'all')">
+                    <span>Tất cả</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="Intel Core i9" onclick="filterByBrand(event, 'Intel Core i9')">
+                    <span>Intel Core i9</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="AMD Ryzen 9" onclick="filterByBrand(event, 'AMD Ryzen 9')">
+                    <span>AMD Ryzen 9</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="RTX 5070Ti" onclick="filterByBrand(event, 'RTX 5070Ti')">
+                    <span>RTX 5070Ti</span>
+                </button>
+                <button type="button" class="brand-btn" data-brand="RTX 5060Ti" onclick="filterByBrand(event, 'RTX 5060Ti')">
+                    <span>RTX 5060Ti</span>
+                </button>
+            </div>
+        </section>
 
-        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp PC">
+        <!-- THANH TIÊU CHÍ NÂNG CAO VỚI CUSTOM DROPDOWN -->
+        <div class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp PC">
             <div class="dropdowns-group">
-                <label for="filter-cpu" class="visually-hidden">Vi xử lý</label>
-                <select id="filter-cpu" onchange="applyFilters()"><option value="">Vi xử lý</option></select>
-                <label for="filter-vga" class="visually-hidden">Card đồ hoạ</label>
-                <select id="filter-vga" onchange="applyFilters()"><option value="">Card đồ hoạ</option></select>
-                <label for="filter-ram" class="visually-hidden">Dung lượng RAM</label>
-                <select id="filter-ram" onchange="applyFilters()"><option value="">Dung lượng RAM</option></select>
-                <label for="filter-storage" class="visually-hidden">Ổ cứng</label>
-                <select id="filter-storage" onchange="applyFilters()"><option value="">Ổ cứng</option></select>
+                <!-- 1. Vi xử lý (CPU) -->
+                <div class="custom-select-wrapper" id="wrapper-cpu" data-filter="cpu">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Vi xử lý</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Vi xử lý</div>
+                        <div class="custom-option-item" data-value="i9">Intel Core i9</div>
+                        <div class="custom-option-item" data-value="i7">Intel Core i7</div>
+                        <div class="custom-option-item" data-value="i5">Intel Core i5</div>
+                        <div class="custom-option-item" data-value="ryzen 9">AMD Ryzen 9</div>
+                        <div class="custom-option-item" data-value="ryzen 7">AMD Ryzen 7</div>
+                        <div class="custom-option-item" data-value="ryzen 5">AMD Ryzen 5</div>
+                    </div>
+                </div>
+
+                <!-- 2. Card đồ hoạ (VGA) -->
+                <div class="custom-select-wrapper" id="wrapper-vga" data-filter="vga">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Card đồ hoạ</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Card đồ hoạ</div>
+                        <div class="custom-option-item" data-value="5090">RTX 5090</div>
+                        <div class="custom-option-item" data-value="5080">RTX 5080</div>
+                        <div class="custom-option-item" data-value="5070">RTX 5070 Series</div>
+                        <div class="custom-option-item" data-value="5060">RTX 5060 Series</div>
+                        <div class="custom-option-item" data-value="4060">RTX 4060 Series</div>
+                        <div class="custom-option-item" data-value="radeon">AMD Radeon</div>
+                    </div>
+                </div>
+
+                <!-- 3. Dung lượng RAM -->
+                <div class="custom-select-wrapper" id="wrapper-ram" data-filter="ram">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Dung lượng RAM</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">RAM</div>
+                        <div class="custom-option-item" data-value="16gb">16 GB</div>
+                        <div class="custom-option-item" data-value="32gb">32 GB</div>
+                        <div class="custom-option-item" data-value="64gb">64 GB</div>
+                        <div class="custom-option-item" data-value="128gb">128 GB</div>
+                    </div>
+                </div>
+
+                <!-- 4. Ổ cứng (Storage) -->
+                <div class="custom-select-wrapper" id="wrapper-storage" data-filter="storage">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Ổ cứng</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Ổ cứng</div>
+                        <div class="custom-option-item" data-value="512gb">SSD 512 GB</div>
+                        <div class="custom-option-item" data-value="1tb">SSD 1 TB</div>
+                        <div class="custom-option-item" data-value="2tb">SSD 2 TB</div>
+                    </div>
+                </div>
             </div>
-            <div class="sort-group">
-                <label for="sort-products">Sắp xếp theo:</label>
-                <select id="sort-products" onchange="applyFilters()">
-                    <option value="featured">Nổi bật</option>
-                    <option value="price-asc">Giá thấp đến cao</option>
-                    <option value="price-desc">Giá cao đến thấp</option>
-                </select>
+
+            <!-- Sắp xếp theo giá -->
+            <div class="sort-group" style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; color: #333;">Sắp xếp theo:</span>
+                <div class="custom-select-wrapper" id="wrapper-sort" data-filter="sort">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Nổi bật</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="featured">Nổi bật</div>
+                        <div class="custom-option-item" data-value="price-asc">Giá thấp đến cao</div>
+                        <div class="custom-option-item" data-value="price-desc">Giá cao đến thấp</div>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
 
         <div class="products-grid-layout" id="PCs-container"></div>
 
@@ -78,13 +141,22 @@
 
     <%- include('partials/footer') %>
 
-<script>
+    <script>
         const pcsContainer = document.getElementById('PCs-container');
         let allPCsData = [];
         let currentLimit = 20;
         let selectedFilter = 'all';
 
-        // 🟢 Đọc tham số từ URL (ví dụ: /pc?filter=Intel Core i9 hoặc /pc?filter=RTX 5070Ti)
+        // Biến lưu trạng thái bộ lọc PC
+        const filterState = {
+            cpu: '',
+            vga: '',
+            ram: '',
+            storage: '',
+            sort: 'featured'
+        };
+
+        // Đọc tham số từ URL (ví dụ: /pc?filter=Intel Core i9 hoặc /pc?filter=RTX 5070Ti)
         const urlParams = new URLSearchParams(window.location.search);
         const filterFromUrl = urlParams.get('filter') || urlParams.get('brand');
         if (filterFromUrl) {
@@ -92,20 +164,53 @@
         }
 
         function formatPcPrice(price) {
-            if (price === undefined || price === null || price === '') return 'Liên hệ';
-            if (typeof price === 'number') return price.toLocaleString('vi-VN') + 'đ';
-            return price;
+            if (price === undefined || price === null || price === '' || isNaN(Number(price))) return 'Liên hệ';
+            return Number(price).toLocaleString('vi-VN') + 'đ';
         }
+
+        // Khởi tạo sự kiện Custom Dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.custom-select-wrapper');
+
+            dropdowns.forEach(wrapper => {
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                const options = wrapper.querySelectorAll('.custom-option-item');
+                const label = wrapper.querySelector('.selected-label');
+                const filterKey = wrapper.dataset.filter;
+
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    dropdowns.forEach(w => {
+                        if (w !== wrapper) w.classList.remove('open');
+                    });
+                    wrapper.classList.toggle('open');
+                });
+
+                options.forEach(opt => {
+                    opt.addEventListener('click', function () {
+                        options.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        label.textContent = this.textContent;
+                        wrapper.classList.remove('open');
+
+                        filterState[filterKey] = this.dataset.value;
+                        applyFilters();
+                    });
+                });
+            });
+
+            document.addEventListener('click', function () {
+                dropdowns.forEach(wrapper => wrapper.classList.remove('open'));
+            });
+        });
 
         fetch('/api/pcs')
             .then(response => response.json())
             .then(data => {
                 allPCsData = data;
                 
-                // Highlight nút lọc tương ứng
                 highlightPcButton(selectedFilter);
-
-                // Áp dụng bộ lọc khi load xong dữ liệu
                 applyFilters();
             })
             .catch(err => console.error('Lỗi tải dữ liệu PC:', err));
@@ -168,7 +273,7 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', function () {
                 currentLimit += 20;
-                applyFilters();
+                applyFilters(false);
             });
         }
 
@@ -197,11 +302,13 @@
             return 0;
         }
 
-        function applyFilters() {
-            currentLimit = 20;
+        function applyFilters(resetLimit = true) {
+            if (resetLimit) {
+                currentLimit = 20;
+            }
             let filtered = [...allPCsData];
 
-            // 1. Lọc theo Cấu hình/Thương hiệu (Lọc theo brand hoặc tìm trong tên/mô tả/CPU/VGA)
+            // 1. Lọc theo Brand Button phía trên
             if (selectedFilter !== 'all') {
                 filtered = filtered.filter(item => {
                     const target = selectedFilter.toLowerCase();
@@ -215,12 +322,42 @@
                 });
             }
 
-            // 2. Sắp xếp theo giá
-            const sortSelect = document.getElementById('sort-products');
-            const sortVal = sortSelect ? sortSelect.value : 'featured';
-            if (sortVal === 'price-asc') {
+            // 2. Lọc CPU
+            if (filterState.cpu) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(filterState.cpu.toLowerCase());
+                });
+            }
+
+            // 3. Lọc VGA (Card màn hình)
+            if (filterState.vga) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.vga || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(filterState.vga.toLowerCase());
+                });
+            }
+
+            // 4. Lọc RAM
+            if (filterState.ram) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(filterState.ram.toLowerCase());
+                });
+            }
+
+            // 5. Lọc Ổ cứng
+            if (filterState.storage) {
+                filtered = filtered.filter(item => {
+                    const textSearch = ((item.storage || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
+                    return textSearch.includes(filterState.storage.toLowerCase());
+                });
+            }
+
+            // 6. Sắp xếp giá
+            if (filterState.sort === 'price-asc') {
                 filtered.sort((a, b) => getPcNumericPrice(a) - getPcNumericPrice(b));
-            } else if (sortVal === 'price-desc') {
+            } else if (filterState.sort === 'price-desc') {
                 filtered.sort((a, b) => getPcNumericPrice(b) - getPcNumericPrice(a));
             }
 

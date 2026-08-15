@@ -37,7 +37,7 @@
 
                 <div class="form-field">
                     <label for="phone">Số điện thoại</label>
-                    <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" pattern="[0-9]{10}" required>
+                    <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
                 </div>
 
                 <!-- MẬT KHẨU CÓ ICON MẮT -->
@@ -89,42 +89,78 @@
             }
         }
 
-        document.querySelector('.auth-form').addEventListener('submit', function (e) {
+       document.querySelector('.auth-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            if (!this.checkValidity()) {
-                this.reportValidity();
-                return;
-            }
-            const pw = document.getElementById('reg-password').value;
-            const pwConfirm = document.getElementById('reg-password-confirm').value;
+
+            const fullnameInput = document.getElementById('fullname');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const pwInput = document.getElementById('reg-password');
+            const pwConfirmInput = document.getElementById('reg-password-confirm');
+
+            // 1. QUAN TRỌNG NHẤT: Xóa sạch toàn bộ trạng thái lỗi cũ trước khi kiểm tra lần mới
+            [fullnameInput, emailInput, phoneInput, pwInput, pwConfirmInput].forEach(el => {
+                if (el) el.setCustomValidity('');
+            });
+
+            const fullnameVal = fullnameInput.value.trim();
+            const emailVal = emailInput.value.trim();
+            const phoneVal = phoneInput.value.trim();
+            const pw = pwInput.value;
+            const pwConfirm = pwConfirmInput.value;
+
+            // 2. Kiểm tra mật khẩu nhập lại
             if (pw !== pwConfirm) {
-                alert('Mật khẩu nhập lại không khớp!');
+                pwConfirmInput.setCustomValidity('Mật khẩu nhập lại không khớp!');
+                pwConfirmInput.reportValidity();
                 return;
             }
 
             const submitBtn = this.querySelector('.auth-submit-btn');
             submitBtn.disabled = true;
 
+            // 3. Gửi lên Server (authRoutes.js) để kiểm tra
             fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    fullname: document.getElementById('fullname').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                    phone: document.getElementById('phone').value.trim(),
+                    fullname: fullnameVal,
+                    email: emailVal,
+                    phone: phoneVal,
                     password: pw
                 })
             })
             .then(async (res) => {
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Đăng ký thất bại.');
+                if (!res.ok) {
+                    throw new Error(data.error || 'Đăng ký thất bại.');
+                }
                 
-                // Thông báo đăng ký thành công và chuyển hướng sang trang ĐĂNG NHẬP
                 alert('Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.');
                 window.location.href = '/dangnhap.html'; 
             })
             .catch((err) => {
-                alert(err.message);
+                const errMsg = err.message;
+
+                // Xóa lại lỗi lần nữa trước khi gán lỗi mới từ server trả về
+                [fullnameInput, emailInput, phoneInput, pwInput].forEach(el => el.setCustomValidity(''));
+
+                if (errMsg.includes('Họ và tên')) {
+                    fullnameInput.setCustomValidity(errMsg);
+                    fullnameInput.reportValidity();
+                } else if (errMsg.includes('Số điện thoại') || errMsg.includes('SĐT')) {
+                    phoneInput.setCustomValidity(errMsg);
+                    phoneInput.reportValidity();
+                } else if (errMsg.includes('email') || errMsg.includes('Email')) {
+                    emailInput.setCustomValidity(errMsg);
+                    emailInput.reportValidity();
+                } else if (errMsg.includes('Mật khẩu')) {
+                    pwInput.setCustomValidity(errMsg);
+                    pwInput.reportValidity();
+                } else {
+                    alert(errMsg);
+                }
+
                 submitBtn.disabled = false;
             });
         });

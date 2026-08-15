@@ -14,7 +14,7 @@
 <body>
     <%- include('partials/header', { active: 'dienthoai' }) %>
 
-<main class="container_dienthoai">
+    <main class="container_dienthoai">
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
@@ -64,65 +64,96 @@
                 </button>
 
                 <button type="button" class="brand-btn" data-brand="Honor" onclick="filterByBrand(event, 'Honor')">
-                    <img src="/Hình ảnh/Logo/vivo-logo.png" alt="Honor" class="brand-logo">
+                    <img src="/Hình ảnh/Logo/honor-logo.png" alt="Honor" class="brand-logo">
+                </button>
+
+                <button type="button" class="brand-btn" data-brand="Vivo" onclick="filterByBrand(event, 'Vivo')">
+                    <img src="/Hình ảnh/Logo/vivo-logo.png" alt="Vivo" class="brand-logo">
                 </button>
             </div>
         </section>
 
-        <form class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp">
+        <!-- THANH TIÊU CHÍ NÂNG CAO VỚI CUSTOM DROPDOWN -->
+        <div class="advanced-filter-bar" aria-label="Bộ lọc và sắp xếp">
             <div class="dropdowns-group">
-                <!-- Vi xử lý -->
-                <label for="filter-cpu" class="visually-hidden">Vi xử lý</label>
-                <select id="filter-cpu" onchange="applyFilters()">
-                    <option value="">Vi xử lý</option>
-                    <option value="apple">Apple Silicon</option>
-                    <option value="snapdragon">Snapdragon</option>
-                    <option value="helio">MediaTek</option>
-                    <option value="exynos">Exynos</option>
-                </select>
+                <!-- 1. Vi xử lý -->
+                <div class="custom-select-wrapper" id="wrapper-cpu" data-filter="cpu">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Vi xử lý</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Vi xử lý</div>
+                        <div class="custom-option-item" data-value="apple">Apple Silicon</div>
+                        <div class="custom-option-item" data-value="snapdragon">Snapdragon</div>
+                        <div class="custom-option-item" data-value="helio">MediaTek</div>
+                        <div class="custom-option-item" data-value="exynos">Exynos</div>
+                    </div>
+                </div>
 
-                <!-- Dung lượng RAM -->
-                <label for="filter-ram" class="visually-hidden">Dung lượng RAM</label>
-                <select id="filter-ram" onchange="applyFilters()">
-                    <option value="">Dung lượng RAM</option>
-                    <option value="4gb">4 GB</option>
-                    <option value="6gb">6 GB</option>
-                    <option value="8gb">8 GB</option>
-                    <option value="12gb">12 GB</option>
-                    <option value="16gb">16 GB</option>
-                </select>
+                <!-- 2. Dung lượng RAM -->
+                <div class="custom-select-wrapper" id="wrapper-ram" data-filter="ram">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Dung lượng RAM</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Tất cả RAM</div>
+                        <div class="custom-option-item" data-value="4gb">4 GB</div>
+                        <div class="custom-option-item" data-value="6gb">6 GB</div>
+                        <div class="custom-option-item" data-value="8gb">8 GB</div>
+                        <div class="custom-option-item" data-value="12gb">12 GB</div>
+                        <div class="custom-option-item" data-value="16gb">16 GB</div>
+                    </div>
+                </div>
 
-                <!-- Bộ nhớ trong -->
-                <label for="filter-storage" class="visually-hidden">Bộ nhớ trong</label>
-                <select id="filter-storage" onchange="applyFilters()">
-                    <option value="">Bộ nhớ trong</option>
-                    <option value="64gb">64 GB</option>
-                    <option value="128gb">128 GB</option>
-                    <option value="256gb">256 GB</option>
-                    <option value="512gb">512 GB</option>
-                    <option value="1tb">1 TB</option>
-                </select>
+                <!-- 3. Bộ nhớ trong -->
+                <div class="custom-select-wrapper" id="wrapper-storage" data-filter="storage">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Bộ nhớ trong</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Tất cả bộ nhớ</div>
+                        <div class="custom-option-item" data-value="64gb">64 GB</div>
+                        <div class="custom-option-item" data-value="128gb">128 GB</div>
+                        <div class="custom-option-item" data-value="256gb">256 GB</div>
+                        <div class="custom-option-item" data-value="512gb">512 GB</div>
+                        <div class="custom-option-item" data-value="1tb">1 TB</div>
+                    </div>
+                </div>
 
-                <!-- Màn hình -->
-                <label for="filter-screen" class="visually-hidden">Màn hình</label>
-                <select id="filter-screen" onchange="applyFilters()">
-                    <option value="">Màn hình</option>
-                    <option value="small">Dưới 6.1 inch</option>
-                    <option value="medium">6.1 - 6.7 inch</option>
-                    <option value="large">Trên 6.7 inch</option>
-                </select>
+                <!-- 4. Màn hình -->
+                <div class="custom-select-wrapper" id="wrapper-screen" data-filter="screen">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Màn hình</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="">Tất cả kích thước</div>
+                        <div class="custom-option-item" data-value="small">Dưới 6.1 inch</div>
+                        <div class="custom-option-item" data-value="medium">6.1 - 6.7 inch</div>
+                        <div class="custom-option-item" data-value="large">Trên 6.7 inch</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Sắp xếp theo giá -->
-            <div class="sort-group">
-                <label for="sort-products">Sắp xếp theo:</label>
-                <select id="sort-products" onchange="applyFilters()">
-                    <option value="featured">Nổi bật</option>
-                    <option value="price-asc">Giá thấp đến cao</option>
-                    <option value="price-desc">Giá cao đến thấp</option>
-                </select>
+            <div class="sort-group" style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-family: 'Nunito Sans', sans-serif; font-size: 14px; font-weight: 600; color: #333;">Sắp xếp theo:</span>
+                <div class="custom-select-wrapper" id="wrapper-sort" data-filter="sort">
+                    <div class="custom-select-trigger">
+                        <span class="selected-label">Nổi bật</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-options-menu">
+                        <div class="custom-option-item selected" data-value="featured">Nổi bật</div>
+                        <div class="custom-option-item" data-value="price-asc">Giá thấp đến cao</div>
+                        <div class="custom-option-item" data-value="price-desc">Giá cao đến thấp</div>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
 
         <div class="products-grid-layout" id="Phones-container"></div>
 
@@ -134,7 +165,7 @@
 
     <%- include('partials/footer') %>
 
-<script>
+    <script>
         function formatVND(price) {
             if (price === undefined || price === null || price === '' || isNaN(price)) return 'Liên hệ';
             return Number(price).toLocaleString('vi-VN') + 'đ';
@@ -145,12 +176,63 @@
         let currentLimit = 20; 
         let selectedBrand = 'all';
 
+        // Biến lưu trạng thái các bộ lọc hiện tại
+        const filterState = {
+            cpu: '',
+            ram: '',
+            storage: '',
+            screen: '',
+            sort: 'featured'
+        };
+
         // Đọc tham số 'brand' từ URL (ví dụ: /dienthoai?brand=iPhone)
         const urlParams = new URLSearchParams(window.location.search);
         const brandFromUrl = urlParams.get('brand');
         if (brandFromUrl) {
             selectedBrand = brandFromUrl;
         }
+
+        // Khởi tạo sự kiện đóng/mở & chọn cho Custom Dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.custom-select-wrapper');
+
+            dropdowns.forEach(wrapper => {
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                const options = wrapper.querySelectorAll('.custom-option-item');
+                const label = wrapper.querySelector('.selected-label');
+                const filterKey = wrapper.dataset.filter;
+
+                // Bấm mở/đóng dropdown
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    dropdowns.forEach(w => {
+                        if (w !== wrapper) w.classList.remove('open');
+                    });
+                    wrapper.classList.toggle('open');
+                });
+
+                // Bấm chọn option
+                options.forEach(opt => {
+                    opt.addEventListener('click', function () {
+                        options.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Cập nhật text hiển thị trên nút bấm
+                        label.textContent = this.textContent;
+                        wrapper.classList.remove('open');
+
+                        // Lưu giá trị lọc và kích hoạt lọc lại danh sách
+                        filterState[filterKey] = this.dataset.value;
+                        applyFilters();
+                    });
+                });
+            });
+
+            // Nhấp chuột ra ngoài thì đóng toàn bộ dropdown
+            document.addEventListener('click', function () {
+                dropdowns.forEach(wrapper => wrapper.classList.remove('open'));
+            });
+        });
 
         // Gọi API lấy dữ liệu điện thoại
         fetch('/api/products') 
@@ -276,47 +358,44 @@
             }
             let filtered = [...allPhonesData];
 
+            // 1. Lọc theo thương hiệu
             if (selectedBrand !== 'all') {
                 filtered = filtered.filter(item => 
                     item.brand && item.brand.toLowerCase() === selectedBrand.toLowerCase()
                 );
             }
 
-            const cpuSelect = document.getElementById('filter-cpu');
-            const cpuVal = cpuSelect ? cpuSelect.value.toLowerCase() : '';
-            if (cpuVal) {
+            // 2. Lọc theo Vi xử lý
+            if (filterState.cpu) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.cpu || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(cpuVal);
+                    return textSearch.includes(filterState.cpu.toLowerCase());
                 });
             }
 
-            const ramSelect = document.getElementById('filter-ram');
-            const ramVal = ramSelect ? ramSelect.value.toLowerCase() : '';
-            if (ramVal) {
+            // 3. Lọc theo RAM
+            if (filterState.ram) {
                 filtered = filtered.filter(item => {
                     const textSearch = ((item.ram || '') + ' ' + (item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(ramVal);
+                    return textSearch.includes(filterState.ram.toLowerCase());
                 });
             }
 
-            const storageSelect = document.getElementById('filter-storage');
-            const storageVal = storageSelect ? storageSelect.value.toLowerCase() : '';
-            if (storageVal) {
+            // 4. Lọc theo Bộ nhớ trong
+            if (filterState.storage) {
                 filtered = filtered.filter(item => {
                     if (item.variants && item.variants.length > 0) {
-                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(storageVal));
+                        return item.variants.some(v => (v.storage || '').toLowerCase().includes(filterState.storage.toLowerCase()));
                     }
                     const textSearch = ((item.name || '') + ' ' + (item.desc || '')).toLowerCase();
-                    return textSearch.includes(storageVal);
+                    return textSearch.includes(filterState.storage.toLowerCase());
                 });
             }
 
-            const sortSelect = document.getElementById('sort-products');
-            const sortVal = sortSelect ? sortSelect.value : 'featured';
-            if (sortVal === 'price-asc') {
+            // 5. Sắp xếp giá
+            if (filterState.sort === 'price-asc') {
                 filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
-            } else if (sortVal === 'price-desc') {
+            } else if (filterState.sort === 'price-desc') {
                 filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
             }
 
